@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.redhat.bpm</groupId>
+    <artifactId>bpm-client-utilities</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>bpm-process-signaling</module>
+	    <module>bpm-process-signaling-client</module>
+        <module>bpm-process-signaling-mdb</module>
+        <module>bpm-query-filter</module>
+    </modules>
+
+    <properties>
+
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+
+        <version.org.brms-bpmsuite>6.4.4.GA-redhat-3</version.org.brms-bpmsuite>
+        <version.org.kie>6.5.0.Final-redhat-12</version.org.kie>
+        <version.org.slf4j>1.7.15</version.org.slf4j>
+
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>jboss-ga</id>
+            <url>https://maven.repository.redhat.com/ga</url>
+        </repository>
+        <repository>
+            <id>jboss-public-repository-group</id>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jboss-public-repository-group</id>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.bom.brms</groupId>
+                <artifactId>jboss-brms-bpmsuite-platform-bom</artifactId>
+                <type>pom</type>
+                <version>${version.org.brms-bpmsuite}</version>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${version.org.slf4j}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>
