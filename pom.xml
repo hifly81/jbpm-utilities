@@ -8,7 +8,7 @@
 
     <modules>
         <module>bpm-process-signaling</module>
-	    <module>bpm-process-signaling-client</module>
+	    <module>bpm-client</module>
         <module>bpm-process-signaling-mdb</module>
         <module>bpm-query-filter</module>
     </modules>

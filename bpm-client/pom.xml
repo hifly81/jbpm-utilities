@@ -7,7 +7,7 @@
         <artifactId>bpm-client-utilities</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>bpm-process-signaling-client</artifactId>
+    <artifactId>bpm-client</artifactId>
 
     <dependencies>
         <dependency>
