@@ -18,9 +18,9 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <!-- BOM version -->
-        <version.org.brms-bpmsuite>6.4.4.GA-redhat-3</version.org.brms-bpmsuite>
+        <version.org.brms-bpmsuite>6.4.9.GA-redhat-2</version.org.brms-bpmsuite>
         <!-- KIE && jbpm versions -->
-        <version.org.kie>6.5.0.Final-redhat-12</version.org.kie>
+        <version.org.kie>6.5.0.Final-redhat-21</version.org.kie>
         <version.org.slf4j>1.7.15</version.org.slf4j>
 
     </properties>
