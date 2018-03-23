@@ -18,13 +18,13 @@ public class BPMClient {
 
     public static void main(String[] args) {
 
-        System.out.println("JBPM external client demo\n  --> Choose a (Rest) or (JMS) client:");
+        LOG.info("JBPM external client demo\n  --> Choose a (Rest) or (JMS) client:");
 
         Scanner scanner = new Scanner(System.in);
 
         String clientMode = scanner.nextLine();
 
-        System.out.println("Insert a Container ID:");
+        LOG.info("Insert a Container ID:");
 
         String containerId = scanner.nextLine();
 
@@ -34,22 +34,22 @@ public class BPMClient {
         kieService.registerAdvancedQueries();
 
         while (true) {
-            System.out.println("\nMenu Options\n");
-            System.out.println("(1) - start processes");
-            System.out.println("(2) - signal processes with an event");
-            System.out.println("(3) - task detail");
-            System.out.println("(4) - query - process variables");
-            System.out.println("(5) - query - owned task by process variables and task variables");
-            System.out.println("(6) - query - owned task by process variables and task variables - AND clause");
-            System.out.println("(7) - quit");
+            LOG.info("\nMenu Options\n");
+            LOG.info("(1) - start processes");
+            LOG.info("(2) - signal processes with an event");
+            LOG.info("(3) - task detail");
+            LOG.info("(4) - query - process variables");
+            LOG.info("(5) - query - owned task by process variables and task variables");
+            LOG.info("(6) - query - owned task by process variables and task variables - AND clause");
+            LOG.info("(7) - quit");
 
-            System.out.print("Please enter your selection:\t");
+            LOG.info("Please enter your selection:\t");
             int selection = scanner.nextInt();
             scanner.nextLine();
 
             if (selection == 1) {
 
-                System.out.print("Enter a list of processes instance to start, separeted with a comma" +
+                LOG.info("Enter a list of processes instance to start, separeted with a comma" +
                         "(1) for process-signaling,\n " +
                         "(2) for process-signaling-bis,\n " +
                         "(3) for process-signaling-multiple-events,\n " +
@@ -74,7 +74,7 @@ public class BPMClient {
 
                     }
                     else if(bpmn == BPMN.PROCESS_GENERIC) {
-                        System.out.println("Enter a process definition id:");
+                        LOG.info("Enter a process definition id:");
                         String processDefinitionId = scanner.nextLine();
                         pid = kieService.startProcess(containerId, processDefinitionId);
                     }
@@ -88,18 +88,18 @@ public class BPMClient {
 
             }
             else if (selection == 2) {
-                System.out.println("Enter an event name: (allowed: task1_completed, event1, event2, event_sub)");
+                LOG.info("Enter an event name: (allowed: task1_completed, event1, event2, event_sub)");
                 String signalName = scanner.nextLine();
                 kieService.signal(containerId, signalName,"OK");
             }
             else if (selection == 3) {
-                System.out.println("Enter a taskId:");
+                LOG.info("Enter a taskId:");
                 String taskId = scanner.nextLine();
                 TaskInstance taskInstance = kieService.taskDetail(containerId, Long.valueOf(taskId));
                 LOG.info("TaskInstance detail: {}", taskInstance);
             }
             else if (selection == 4) {
-                System.out.println("Enter a process definition id:");
+                LOG.info("Enter a process definition id:");
                 String processDefinitionId = scanner.nextLine();
                 List<ProcessInstance> processInstanceList = kieService.findProcessInstancesWithVariables(processDefinitionId, 0, 100);
                 LOG.info("Process Instances list: {}", processInstanceList);
