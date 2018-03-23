@@ -18,7 +18,6 @@ import static org.redhat.bpm.workbeat.query.AdvancedQueryFactory.POT_OWNED_TASKS
 public abstract class KieService {
 
     private static final String[] POT_OWNED_STATUS = {"Created", "Ready", "Reserved", "InProgress", "Suspended"};
-    public static final String RAW_LIST_7 = "RawList7";
     private static final int ARBITRARY_LONG_VALUE = 10000;
 
     protected KieServicesConfiguration config;

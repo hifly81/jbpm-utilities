@@ -12,8 +12,10 @@ import java.util.Properties;
 
 public class JMSTopicPublisher implements WorkItemHandler {
 
-    private static final String username = "bpmsAdmin";
-    private static final String password = "password@1";
+    //TODO changeit
+    private static final String username = "";
+    //TODO changeit
+    private static final String password = "";
     private static final String REMOTING_URL = new String("remote://localhost:4447");
     private static final String INITIAL_CONTEXT_FACTORY = new String("org.jboss.naming.remote.client.InitialContextFactory");
     private static final String REMOTE_CONNECTION_FACTORY = new String("jms/RemoteConnectionFactory");
