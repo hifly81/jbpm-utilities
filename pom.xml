@@ -2,13 +2,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.redhat.bpm</groupId>
-    <artifactId>bpm-client-utilities</artifactId>
+    <artifactId>bpm-utilities</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>bpm-process-utilities</module>
-	    <module>bpm-client</module>
+	    <module>bpm-client-utilities</module>
         <module>bpm-query-filter</module>
     </modules>
 

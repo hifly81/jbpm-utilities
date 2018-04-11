@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>org.redhat.bpm</groupId>
-        <artifactId>bpm-client-utilities</artifactId>
+        <artifactId>bpm-utilities</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>bpm-process-utilities</artifactId>
