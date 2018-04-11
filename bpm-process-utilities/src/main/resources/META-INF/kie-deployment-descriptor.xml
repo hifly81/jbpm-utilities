@@ -17,8 +17,17 @@
             <resolver>mvel</resolver>
             <identifier>new org.redhat.bpm.workbeat.logging.LogProcessEventListener(runtimeManager, true)</identifier>
         </event-listener>
+        <event-listener>
+            <resolver>mvel</resolver>
+            <identifier>new org.redhat.bpm.workbeat.timer.AfterTimerListener()</identifier>
+        </event-listener>
     </event-listeners>
-    <task-event-listeners/>
+    <task-event-listeners>
+        <task-event-listener>
+            <resolver>mvel</resolver>
+            <identifier>new org.redhat.bpm.workbeat.logging.LogTaskEventListener(runtimeManager, true)</identifier>
+        </task-event-listener>
+    </task-event-listeners>
     <globals>
         <global>
             <resolver>mvel</resolver>
@@ -57,6 +66,18 @@
             <identifier>new org.redhat.bpm.workbeat.wid.JMSTopicPublisher()</identifier>
             <parameters/>
             <name>JMSTopicPublisher</name>
+        </work-item-handler>
+        <work-item-handler>
+            <resolver>mvel</resolver>
+            <identifier>new org.redhat.bpm.workbeat.wid.JMSPublisher(runtimeManager)</identifier>
+            <parameters/>
+            <name>JMSPublisher</name>
+        </work-item-handler>
+        <work-item-handler>
+            <resolver>mvel</resolver>
+            <identifier>new org.redhat.bpm.workbeat.wid.IncreaseAttempts()</identifier>
+            <parameters/>
+            <name>IncreaseAttempts</name>
         </work-item-handler>
     </work-item-handlers>
     <environment-entries/>

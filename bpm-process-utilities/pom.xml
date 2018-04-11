@@ -7,7 +7,7 @@
         <artifactId>bpm-client-utilities</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>bpm-process-signaling</artifactId>
+    <artifactId>bpm-process-utilities</artifactId>
 
     <dependencies>
         <dependency>
@@ -58,6 +58,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.mq</groupId>
+            <artifactId>com.ibm.mq.allclient</artifactId>
+            <version>9.0.4.0</version>
         </dependency>
 
     </dependencies>

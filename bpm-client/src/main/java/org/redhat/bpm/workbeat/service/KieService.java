@@ -18,6 +18,7 @@ import static org.redhat.bpm.workbeat.query.AdvancedQueryFactory.POT_OWNED_TASKS
 public abstract class KieService {
 
     private static final String[] POT_OWNED_STATUS = {"Created", "Ready", "Reserved", "InProgress", "Suspended"};
+    public static final String[] OPEN_STATUS = { "Created", "Ready", "Reserved", "InProgress", "Suspended" };
     private static final int ARBITRARY_LONG_VALUE = 10000;
 
     protected KieServicesConfiguration config;
@@ -54,7 +55,7 @@ public abstract class KieService {
         return query;
     }
 
-    public List<Long> potOwnedTasksByVariablesAndParams(String user, List<String> groups, Map<String, List<String>> paramsMap, Map<String, List<String>> variablesMap) {
+    public List<Long> potOwnedTasksByVariablesAndTaskParamsInOr(String user, List<String> groups, Map<String, List<String>> paramsMap, Map<String, List<String>> variablesMap) {
 
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("user", user);
@@ -80,7 +81,7 @@ public abstract class KieService {
 
     }
 
-    public List<Long> potOwnedTasksByVariablesAndParamsAndClause(
+    public List<Long> potOwnedTasksByVariablesAndTaskParamsInAnd(
             String user,
             List<String> groups,
             Map<String, List<String>> paramsMap,
@@ -89,11 +90,11 @@ public abstract class KieService {
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("user", user);
         parameters.put("groups", groups);
-        parameters.put("status", Arrays.asList(POT_OWNED_STATUS));
+        parameters.put("status", Arrays.asList(OPEN_STATUS));
 
         //evaluate paramsMap composition
-        if(paramsMap != null && !paramsMap.isEmpty() && paramsMap.size() > 3)
-            throw new IllegalStateException("Max 3 paramsMap are allowed (1 must be *-excluded) or 2 paramsMap and no *-excluded");
+        if(paramsMap != null && !paramsMap.isEmpty() && paramsMap.size() > 5)
+            throw new IllegalStateException("Max 5 paramsMap are allowed!");
 
         List<String> keys = new ArrayList<>(paramsMap.keySet());
         String keyToCheck = null;
@@ -109,10 +110,10 @@ public abstract class KieService {
             }
         }
 
-        if(paramsMap.size() == 0 || (paramsMap.size() == 1 && excludedCount ==1))
+        if(paramsMap.size() == 0 || (paramsMap.size() == 1 && excludedCount == 1))
             throw new IllegalStateException("At least one param must be provided");
-        if(excludedCount > 1)
-            throw new IllegalStateException("Only 1 *-excluded param is allowed");
+        if(excludedCount > 2)
+            throw new IllegalStateException("A maximum of 2 *-excluded params are allowed");
         if(excludedCount == 0 && paramsMap.size() > 2)
             throw new IllegalStateException("Max 2 paramsMap are allowed if no *-excluded param is provided");
 
@@ -125,8 +126,8 @@ public abstract class KieService {
             if (variablesMap != null)
                 parameters.put("variablesMap", variablesMap);
 
-            QueryServicesClient queryService = client.getServicesClient(QueryServicesClient.class);
-            List<TaskInstance> taskWithDuplicates = queryService.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsAndClauseFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
+            QueryServicesClient queryServices = client.getServicesClient(QueryServicesClient.class);
+            List<TaskInstance> taskWithDuplicates = queryServices.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
             List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct().collect(Collectors.toList());
 
 
@@ -136,6 +137,11 @@ public abstract class KieService {
 
         //use OR query and apply additional filtering in java
         else {
+            List<String> keysToCheck = new ArrayList<>(2);
+            List<String> keysToQueries = new ArrayList<>(2);
+            boolean multipleParamsToExclude = false;
+            boolean multipleParamsToQuery = false;
+
             //there is no key to exclude
             if(keyToExclude == null) {
                 keyToQuery = keys.get(0);
@@ -144,12 +150,11 @@ public abstract class KieService {
                     keyToCheck = keys.get(1);
             }
             else {
-                /*
-                  there is a key to exclude: two cases are allowed:
-                    1) -excluded and keyToQuery
-                    2) -excluded, keyToQuery and keyToCheck
-                 */
+	            /*
+	              there is a key to exclude: 4 cases are allowed
+	            */
 
+                //1) -excluded and keyToQuery
                 if(paramsMap.size() == 2) {
                     for (String key : keys) {
                         if (!key.equalsIgnoreCase(keyToExclude)) {
@@ -160,7 +165,9 @@ public abstract class KieService {
 
                     keyToExcludeWithoutCheck = keyToExclude.replace("-excluded","");
                 }
-                else {
+
+                //2) -excluded, keyToQuery and keyToCheck
+                else if(paramsMap.size() == 3) {
                     for (String key : keys) {
                         if (key.matches(keyToExclude.replace("-excluded", ""))) {
                             keyToCheck = key;
@@ -175,6 +182,34 @@ public abstract class KieService {
                         }
                     }
                 }
+                //3) -excluded, 2 keyToQuery and keyToCheck
+                else if(paramsMap.size() == 4) {
+                    for (String key : keys) {
+                        if (key.matches(keyToExclude.replace("-excluded", ""))) {
+                            keyToCheck = key;
+                        } else if(!key.contains("-excluded")){
+                            keysToQueries.add(key);
+                        }
+                    }
+                    keyToQuery = keysToQueries.get(0);
+                    multipleParamsToQuery = true;
+
+                }
+                //4) 2 excluded, 1 keyToQuery and 2 keyToCheck
+                else if(paramsMap.size() == 5) {
+                    List<String> includedKeys = new ArrayList<>(3);
+                    for(String key: keys) {
+                        if (key.matches(".*-excluded"))
+                            keysToCheck.add(key.replace("-excluded", ""));
+                        else
+                            includedKeys.add(key);
+                    }
+                    for(String key: includedKeys) {
+                        if(!keysToCheck.contains(key))
+                            keyToQuery = key;
+                    }
+                    multipleParamsToExclude = true;
+                }
 
             }
 
@@ -186,8 +221,8 @@ public abstract class KieService {
             if (variablesMap != null)
                 parameters.put("variablesMap", variablesMap);
 
-            QueryServicesClient queryService = client.getServicesClient(QueryServicesClient.class);
-            List<TaskInstance> taskWithDuplicates = queryService.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
+            QueryServicesClient queryServices = client.getServicesClient(QueryServicesClient.class);
+            List<TaskInstance> taskWithDuplicates = queryServices.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
             List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct().collect(Collectors.toList());
             taskWithDuplicates = findTasksWithParameters(ids, true);
 
@@ -196,19 +231,38 @@ public abstract class KieService {
             for (Long id : ids) {
                 for (TaskInstance t1 : taskWithDuplicates) {
                     if (t1.getId().equals(id)) {
-                        if (keyToCheck != null) {
-                            //extract second param
-                            if (t1.getInputData().containsKey(keyToCheck)) {
-                                Object o1 = t1.getInputData().get(keyToCheck);
-                                if (paramsMap.get(keyToCheck).contains(o1))
+                        if(!multipleParamsToExclude) {
+                            if (keyToCheck != null) {
+                                //extract second param
+                                if (t1.getInputData().containsKey(keyToCheck)) {
+                                    Object o1 = t1.getInputData().get(keyToCheck);
+                                    if (paramsMap.get(keyToCheck).contains(o1))
+                                        idsToReturn.add(id);
+                                }
+                                if (!t1.getInputData().containsKey(keyToCheck))
                                     idsToReturn.add(id);
+                            } else {
+                                if (keyToExcludeWithoutCheck != null) {
+                                    if (!t1.getInputData().containsKey(keyToExcludeWithoutCheck))
+                                        idsToReturn.add(id);
+                                }
                             }
-                            if (!t1.getInputData().containsKey(keyToCheck))
-                                idsToReturn.add(id);
-                        }
-                        else {
-                            if(keyToExcludeWithoutCheck != null) {
-                                if (!t1.getInputData().containsKey(keyToExcludeWithoutCheck))
+                            if(multipleParamsToQuery) {
+                                String keyTmp = keysToQueries.get(1);
+                                if (t1.getInputData().containsKey(keyTmp)) {
+                                    Object o1 = t1.getInputData().get(keyTmp);
+                                    if (paramsMap.get(keyTmp).contains(o1))
+                                        idsToReturn.add(id);
+                                }
+                            }
+                        } else {
+                            for(String incKey: keysToCheck) {
+                                if (t1.getInputData().containsKey(incKey)) {
+                                    Object o1 = t1.getInputData().get(incKey);
+                                    if (paramsMap.get(incKey).contains(o1))
+                                        idsToReturn.add(id);
+                                }
+                                if (!t1.getInputData().containsKey(incKey))
                                     idsToReturn.add(id);
                             }
                         }
@@ -218,8 +272,8 @@ public abstract class KieService {
 
             return idsToReturn;
         }
-
     }
+
 
     public void signal(String containerId, String signalName, String event) {
         client.getServicesClient(ProcessServicesClient.class).signal(containerId, signalName, event);

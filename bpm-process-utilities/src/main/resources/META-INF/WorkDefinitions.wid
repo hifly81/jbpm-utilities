@@ -70,5 +70,40 @@ import org.drools.core.process.core.datatype.impl.type.ObjectDataType;
       ],
       "displayName" : "JMSTopicPublisher",
       "icon" : "defaultservicenodeicon.png"
-    ]
+    ],
+      [
+          "name" : "JMSPublisher",
+        	 "parameters" : [
+               "destinationName" : new StringDataType(),
+               "jmsConnection" : new StringDataType(),
+               "destinationType" : new StringDataType(),
+               "remoteUrl" : new StringDataType(),
+               "remoteCf" : new StringDataType(),
+               "localCf" : new StringDataType(),
+               "username" : new StringDataType(),
+               "password" : new StringDataType(),
+               "remotePort" : new IntegerDataType(),
+               "channelName" : new StringDataType(),
+               "queueManager" : new StringDataType(),
+               "topicObject" : new StringDataType(),
+               "RestExceptionEndpoint": new StringDataType(),
+               "RestExceptionResponse": new StringDataType(),
+               "RestExceptionStatus": new IntegerDataType()
+            ],
+        	"results" : [
+                  ],
+          "displayName" : "JMSPublisher"
+      ],
+       [
+      	"name" : "IncreaseAttempts",
+        	 "parameters" : [
+               "numAttempts" : new IntegerDataType(),
+               "initialDelayInSeconds" : new IntegerDataType()
+            ],
+        	"results" : [
+        		 "numAttempts" : new IntegerDataType(),
+               "delayAttempts" : new StringDataType()
+            ],
+          "displayName" : "IncreaseAttempts"
+        ]
 ]

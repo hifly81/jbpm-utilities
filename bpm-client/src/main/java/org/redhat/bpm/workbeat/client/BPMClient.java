@@ -37,7 +37,7 @@ public class BPMClient {
             LOG.info("\nMenu Options\n");
             LOG.info("(1) - start processes");
             LOG.info("(2) - signal processes with an event");
-            LOG.info("(3) - task detail");
+            LOG.info("(3) - query - task detail");
             LOG.info("(4) - query - process variables");
             LOG.info("(5) - query - owned task by process variables and task variables");
             LOG.info("(6) - query - owned task by process variables and task variables - AND clause");
@@ -70,17 +70,14 @@ public class BPMClient {
                         parameters.put("eventPublished", "task1_completed");
                         parameters.put("jmsConnection", "local");
                         pid = kieService.startProcess(containerId, bpmn, parameters);
-
-
                     }
                     else if(bpmn == BPMN.PROCESS_GENERIC) {
                         LOG.info("Enter a process definition id:");
                         String processDefinitionId = scanner.nextLine();
                         pid = kieService.startProcess(containerId, processDefinitionId);
                     }
-                    else {
+                    else
                         pid = kieService.startProcess(containerId, bpmn.value());
-                    }
 
                     LOG.info("Process instance {} started with {}", bpmn.value(), pid);
                 }
@@ -88,12 +85,12 @@ public class BPMClient {
 
             }
             else if (selection == 2) {
-                LOG.info("Enter an event name: (allowed: task1_completed, event1, event2, event_sub)");
+                LOG.info("Enter an event name: (example: task1_completed, event1, event2, event_sub)");
                 String signalName = scanner.nextLine();
                 kieService.signal(containerId, signalName,"OK");
             }
             else if (selection == 3) {
-                LOG.info("Enter a taskId:");
+                LOG.info("Enter a task id (long value):");
                 String taskId = scanner.nextLine();
                 TaskInstance taskInstance = kieService.taskDetail(containerId, Long.valueOf(taskId));
                 LOG.info("TaskInstance detail: {}", taskInstance);
@@ -105,10 +102,16 @@ public class BPMClient {
                 LOG.info("Process Instances list: {}", processInstanceList);
             }
             else if (selection == 5) {
-
-
+                LOG.info("Enter a user:");
+                String user = scanner.nextLine();
+                LOG.info("Enter a list of group, separated with a comma:");
+                String groupList = scanner.nextLine();
+                StringTokenizer st = new StringTokenizer(groupList, ",");
                 List<String> groups = new ArrayList<>();
-                groups.add("test");
+                while (st.hasMoreElements()) {
+                    groups.add(st.nextToken());
+                }
+
                 Map<String, List<String>> paramsMap = new HashMap<>();
                 List<String> paramsValue = new ArrayList<> ();
                 paramsValue.add("test");
@@ -121,32 +124,42 @@ public class BPMClient {
                 variablesValue1.add("test");
                 variablesMap.put("company", variablesValue1);
 
-
-                List<Long> tasks = kieService.potOwnedTasksByVariablesAndParams("bpmsAdmin", groups, paramsMap, variablesMap);
+                List<Long> tasks = kieService.potOwnedTasksByVariablesAndTaskParamsInOr(user, groups, paramsMap, variablesMap);
                 LOG.info("Task list: {}", tasks);
             }
             else if (selection == 6) {
 
-
+                LOG.info("Enter a user:");
+                String user = scanner.nextLine();
+                LOG.info("Enter a list of group, separated with a comma:");
+                String groupList = scanner.nextLine();
+                StringTokenizer st = new StringTokenizer(groupList, ",");
                 List<String> groups = new ArrayList<>();
-                groups.add("test");
+                while (st.hasMoreElements()) {
+                    groups.add(st.nextToken());
+                }
+
                 Map<String, List<String>> paramsMap = new HashMap<>();
                 List<String> paramsValue = new ArrayList<> ();
-                paramsValue.add("test");
-                paramsMap.put("company", paramsValue);
+                paramsValue.add("009");
+                paramsMap.put("agency", paramsValue);
                 List<String> paramsValue2 = new ArrayList<> ();
-                paramsValue2.add("livello1");
-                paramsMap.put("level", paramsValue2);
+                paramsValue2.add("test");
+                paramsMap.put("Description", paramsValue2);
+                List<String> paramsValue2bis = new ArrayList<> ();
+                paramsValue2bis.add("1.Livello");
+                paramsMap.put("level", paramsValue2bis);
+
                 List<String> paramsValue3 = new ArrayList<> ();
                 paramsValue3.add("");
                 paramsMap.put("level-excluded", paramsValue3);
+
                 Map<String, List<String>> variablesMap = new HashMap<>();
-                List<String> variablesValue1 = new ArrayList<String>();
+                List<String> variablesValue1 = new ArrayList<>();
                 variablesValue1.add("test");
                 variablesMap.put("company", variablesValue1);
 
-
-                List<Long> tasks = kieService.potOwnedTasksByVariablesAndParamsAndClause("bpmsAdmin", groups, paramsMap, variablesMap);
+                List<Long> tasks = kieService.potOwnedTasksByVariablesAndTaskParamsInAnd(user, groups, paramsMap, variablesMap);
                 LOG.info("Task list: {}", tasks);
             }
             else if (selection == 7) {
@@ -156,4 +169,5 @@ public class BPMClient {
         }
 
     }
+
 }
