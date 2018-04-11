@@ -1,6 +1,16 @@
-# REDHAT BPM/BRMS utilities
+# Red Hat BPM/BRMS utilities
 
-Utilities for REDHAT BPM/BRMS products
+Utilities for Red Hat BPM/BRMS products.
+
+Some components available in this project:
+ - rest client for BPM APIs
+ - jms client for BPM APIs
+ - advanced queries
+ - custom work item handlers
+ - custom event listeners
+ - custom task event listeners
+ - eap log handler for bpm events
+ 
 
 
 ## Compile
