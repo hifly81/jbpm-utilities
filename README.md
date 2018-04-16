@@ -10,6 +10,7 @@ Some components available in this project:
  - custom event listeners
  - custom task event listeners
  - eap log handler for bpm events
+ - bpm extensions to the REST APIs
  
 
 

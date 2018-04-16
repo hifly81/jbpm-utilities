@@ -10,6 +10,7 @@
         <module>bpm-process-utilities</module>
 	    <module>bpm-client-utilities</module>
         <module>bpm-query-filter</module>
+        <module>bpm-extensions</module>
     </modules>
 
     <properties>
