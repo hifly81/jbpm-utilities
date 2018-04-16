@@ -11,6 +11,7 @@ Some components available in this project:
  - custom task event listeners
  - eap log handler for bpm events
  - bpm extensions to the REST APIs
+ - bpm kjar inclusion
  
 
 
