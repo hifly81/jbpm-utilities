@@ -3,6 +3,7 @@ package org.redhat.bpm.service;
 import org.kie.server.api.model.definition.QueryFilterSpec;
 import org.kie.server.api.model.instance.ProcessInstance;
 import org.kie.server.api.model.instance.TaskInstance;
+import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.api.util.QueryFilterSpecBuilder;
 import org.kie.server.client.*;
 import org.redhat.bpm.query.AdvancedQueryFactory;
@@ -307,5 +308,58 @@ public abstract class KieService {
 
         return taskInstances;
 
+    }
+
+    public void assignTaskToGroup(String containerId, Long taskId, String businessAdministrator, String group) {
+        //TODO check if task is in CREATED status
+        UserTaskServicesClient userTaskServicesClient = client.getServicesClient(UserTaskServicesClient.class);
+        userTaskServicesClient.nominateTask(containerId, taskId, businessAdministrator, Arrays.asList(group));
+    }
+
+    public void assignTaskFromGroupToIndividual(String containerId, Long taskId, String group, String user) {
+        UserTaskServicesClient userTaskServicesClient = client.getServicesClient(UserTaskServicesClient.class);
+        TaskInstance taskInstance = userTaskServicesClient.findTaskById(taskId);
+        if(taskInstance != null) {
+            boolean idExists = taskInstance.getPotentialOwners().stream().anyMatch(t -> t.equals(group));
+            if(idExists)
+                userTaskServicesClient.claimTask(containerId, taskId, user);
+        }
+
+    }
+
+    public Map<Long, List<TaskSummary>> getTasksByProcess(String containerId, String processId) {
+        Map<Long, List<TaskSummary>> map = new HashMap<>();
+
+        QueryServicesClient queryServicesClient = client.getServicesClient(QueryServicesClient.class);
+        UserTaskServicesClient userTaskServicesClient = client.getServicesClient(UserTaskServicesClient.class);
+        //TODO pagination via client
+
+        /*
+        process status
+        int STATE_PENDING   = 0;
+        int STATE_ACTIVE    = 1;
+        int STATE_COMPLETED = 2;
+        int STATE_ABORTED   = 3;
+        int STATE_SUSPENDED = 4;
+         */
+
+        List<Integer> processStatus = Arrays.asList(0, 1);
+
+        List<ProcessInstance> processInstances = queryServicesClient.findProcessInstancesByContainerId(containerId, processStatus, 0, 1000);
+        if(processInstances != null && !processInstances.isEmpty()) {
+
+            //TODO check if the status are OK
+            List<String> taskStatus = Arrays.asList("Created", "Ready", "Reserved", "InProgress", "Suspended");
+
+            for(ProcessInstance processInstance: processInstances) {
+                //TODO pagination via client
+                List<TaskSummary> taskSummaries = userTaskServicesClient.findTasksByStatusByProcessInstanceId(processInstance.getId(), taskStatus, 0, 1000);
+                if(taskSummaries != null && !taskSummaries.isEmpty()) {
+                    map.put(processInstance.getId(), taskSummaries);
+                }
+            }
+        }
+
+        return map;
     }
 }
