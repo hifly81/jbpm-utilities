@@ -16,8 +16,19 @@ Some components available in this project:
  
 
 
-## Compile
+## Compile and execute
+In order to compile the projects you need apache maven v3.x
 
+You can compile and create the artifact archives executing commands 
+starting from the root folder.
+
+Compile:
+
+```bash
+mvn clean compile
+```
+
+Create artifacts and execute tests (target folder):
 ```bash
 mvn clean install
 ```
