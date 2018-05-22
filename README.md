@@ -12,6 +12,7 @@ Some components available in this project:
  - eap log handler for bpm events
  - bpm extensions to the REST APIs
  - bpm kjar inclusion
+ - bpm and rules
  
 
 

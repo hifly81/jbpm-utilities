@@ -1,0 +1,16 @@
+package org.redhat.bpm.rules;
+import org.redhat.bpm.rules.Person;
+
+rule "MyRule"
+ruleflow-group "MyProjectGroup"
+    when
+    
+        $p: Person(hourlyRate*wage > 100)
+        
+    then
+    
+        System.out.println( "Hello" + " " + $p.getFirstName() + " " + $p.getLastName() + "!" );
+        System.out.println( "You are rich!" );
+        
+end
+
