@@ -100,7 +100,7 @@ public abstract class KieService {
         if(variablesMap == null || variablesMap.isEmpty())
             throw new IllegalStateException("At least one variable must be provided");
 
-        List<Long> taskIds = potOwnedTasksByVariablesAndParams(user, groups, null, variablesMap);
+        List<Long> taskIds = potOwnedTasksByVariablesAndParams(user, groups, null, null);
         List<TaskInstance> tasksWithParams = findTasksWithParameters(taskIds, true);
 
         List<Long> processIds = tasksWithParams.stream().map(taskInstance -> taskInstance.getProcessInstanceId()).distinct().collect(Collectors.toList());

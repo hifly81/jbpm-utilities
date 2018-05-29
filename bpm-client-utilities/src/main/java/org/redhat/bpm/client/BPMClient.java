@@ -146,7 +146,7 @@ public class BPMClient {
                 List<String> variablesValue1 = new ArrayList<>();
                 variablesValue1.add("test");
                 List<String> variablesValue2 = new ArrayList<>();
-                variablesValue2.add("dummy2");
+                variablesValue2.add("dummy");
 
                 variablesMap.put("company", variablesValue1);
                 variablesMap.put("agency", variablesValue2);
