@@ -6,13 +6,21 @@ import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.api.util.QueryFilterSpecBuilder;
 import org.kie.server.client.*;
+import org.redhat.bpm.model.Page;
+import org.redhat.bpm.model.TaskDetailWithVariable;
 import org.redhat.bpm.query.AdvancedQueryFactory;
 import org.redhat.bpm.util.BPMN;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 import static org.kie.server.client.QueryServicesClient.*;
+import static org.redhat.bpm.query.AdvancedQueryFactory.FIND_PROCESS_INSTANCES_WITH_VARIABLES;
+import static org.redhat.bpm.query.AdvancedQueryFactory.POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS;
 
 public abstract class KieService {
 
@@ -48,7 +56,7 @@ public abstract class KieService {
                 .equalsTo("processid", processDefinitionId)
                 .get();
 
-        List<ProcessInstance> query = queryService.query(AdvancedQueryFactory.FIND_PROCESS_INSTANCES_WITH_VARIABLES,
+        List<ProcessInstance> query = queryService.query(FIND_PROCESS_INSTANCES_WITH_VARIABLES,
                 QUERY_MAP_PI_WITH_VARS, queryFilterSpec, page, pageSize, ProcessInstance.class);
 
         return query;
@@ -72,12 +80,60 @@ public abstract class KieService {
 
         QueryServicesClient queryService = client.getServicesClient(QueryServicesClient.class);
 
-        List<TaskInstance> taskWithDuplicates = queryService.query(AdvancedQueryFactory.POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
+        List<TaskInstance> taskWithDuplicates = queryService.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
 
         List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct().collect(Collectors.toList());
 
         return ids;
 
+    }
+
+    public List<TaskDetailWithVariable> potOwnedTasksByVariablesWithVariablesAndParamsInAnd(
+            String user,
+            List<String> groups,
+            Map<String, List<String>> variablesMap) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("user", user);
+        parameters.put("groups", groups);
+        parameters.put("status", Arrays.asList(POT_OWNED_STATUS));
+
+        if(variablesMap == null || variablesMap.isEmpty())
+            throw new IllegalStateException("At least one variable must be provided");
+
+        List<Long> taskIds = potOwnedTasksByVariablesAndParams(user, groups, null, variablesMap);
+        List<TaskInstance> tasksWithParams = findTasksWithParameters(taskIds, true);
+
+        List<Long> processIds = tasksWithParams.stream().map(taskInstance -> taskInstance.getProcessInstanceId()).distinct().collect(Collectors.toList());
+        List<ProcessInstance> processInstances = findProcessInstancesWithVariables(processIds);
+        Map<Long, Map<String, Object>> processInstanceVariables = processInstances.stream().collect(Collectors.toMap(ProcessInstance::getId, ProcessInstance::getVariables));
+        List<TaskDetailWithVariable> taskInstanceWithVariables = tasksWithParams.stream()
+                .map(taskInstance -> new TaskDetailWithVariable(taskInstance, processInstanceVariables.get(taskInstance.getProcessInstanceId())))
+                .collect(Collectors.toList());
+
+        List<TaskDetailWithVariable> result = new ArrayList<>();
+        if(taskInstanceWithVariables != null && !taskInstanceWithVariables.isEmpty()) {
+            for(TaskDetailWithVariable taskDetailWithVariable: taskInstanceWithVariables) {
+                boolean toAdd = true;
+                //check if all keys are present
+                Set<String> variablesKeys = variablesMap.keySet();
+                Set<String> processVariablesKeys = taskDetailWithVariable.getProcessInstanceVariables().keySet();
+                if(processVariablesKeys.containsAll(variablesKeys)) {
+                    //iterate variablesKeys
+                    for(String variableKey: variablesKeys) {
+                        Object o1 = taskDetailWithVariable.getProcessInstanceVariables().get(variableKey);
+                        if (!variablesMap.get(variableKey).contains(o1)) {
+                            toAdd = false;
+                            break;
+                        }
+                    }
+                    if(toAdd)
+                        result.add(taskDetailWithVariable);
+                }
+            }
+            return result;
+
+        } else
+            return null;
     }
 
     public List<Long> potOwnedTasksByVariablesAndTaskParamsInAnd(
@@ -126,7 +182,7 @@ public abstract class KieService {
                 parameters.put("variablesMap", variablesMap);
 
             QueryServicesClient queryServices = client.getServicesClient(QueryServicesClient.class);
-            List<TaskInstance> taskWithDuplicates = queryServices.query(AdvancedQueryFactory.POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
+            List<TaskInstance> taskWithDuplicates = queryServices.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
             List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct().collect(Collectors.toList());
 
 
@@ -221,7 +277,7 @@ public abstract class KieService {
                 parameters.put("variablesMap", variablesMap);
 
             QueryServicesClient queryServices = client.getServicesClient(QueryServicesClient.class);
-            List<TaskInstance> taskWithDuplicates = queryServices.query(AdvancedQueryFactory.POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
+            List<TaskInstance> taskWithDuplicates = queryServices.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
             List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct().collect(Collectors.toList());
             taskWithDuplicates = findTasksWithParameters(ids, true);
 
@@ -271,6 +327,48 @@ public abstract class KieService {
 
             return idsToReturn;
         }
+    }
+
+    public List<Long> potOwnedTasksByVariablesAndParams(String user, List<String> groups,
+                                                        Map<String, List<String>> paramsMap, Map<String, List<String>> variablesMap) {
+
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("user", user);
+        parameters.put("groups", groups);
+
+        parameters.put("status", Arrays.asList(OPEN_STATUS));
+
+        if (paramsMap != null) {
+            parameters.put("paramsMap", paramsMap);
+        }
+
+        if (variablesMap != null) {
+            parameters.put("variablesMap", variablesMap);
+        }
+
+        QueryServicesClient queryServices = client.getServicesClient(QueryServicesClient.class);
+
+        List<TaskInstance> taskWithDuplicates = queryServices.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS,
+                QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE,
+                TaskInstance.class);
+
+        List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct()
+                .collect(Collectors.toList());
+
+        return ids;
+
+    }
+
+    public List<ProcessInstance> findProcessInstancesWithVariables(List<Long> processIds) {
+
+        QueryFilterSpec queryFilterSpec = new QueryFilterSpecBuilder().in("processinstanceid", processIds).get();
+
+        QueryServicesClient queryServices = client.getServicesClient(QueryServicesClient.class);
+        List<ProcessInstance> processInstances = queryServices.query(FIND_PROCESS_INSTANCES_WITH_VARIABLES,
+                QUERY_MAP_PI_WITH_VARS, queryFilterSpec, 0, ARBITRARY_LONG_VALUE, ProcessInstance.class);
+
+        return processInstances;
+
     }
 
 

@@ -2,6 +2,7 @@ package org.redhat.bpm.client;
 
 import org.kie.server.api.model.instance.ProcessInstance;
 import org.kie.server.api.model.instance.TaskInstance;
+import org.redhat.bpm.model.TaskDetailWithVariable;
 import org.redhat.bpm.service.GatewaySettings;
 import org.redhat.bpm.service.KieService;
 import org.redhat.bpm.service.KieServiceFactory;
@@ -41,7 +42,8 @@ public class BPMClient {
             LOG.info("(4) - query - process variables");
             LOG.info("(5) - query - owned task by process variables and task variables");
             LOG.info("(6) - query - owned task by process variables and task variables - AND clause");
-            LOG.info("(7) - quit");
+            LOG.info("(7) - query - owned task by process variables - AND clause");
+            LOG.info("(8) - quit");
 
             LOG.info("Please enter your selection:\t");
             int selection = scanner.nextInt();
@@ -127,7 +129,7 @@ public class BPMClient {
                 List<Long> tasks = kieService.potOwnedTasksByVariablesAndTaskParamsInOr(user, groups, paramsMap, variablesMap);
                 LOG.info("Task list: {}", tasks);
             }
-            else if (selection == 6) {
+            else if (selection == 7) {
 
                 LOG.info("Enter a user:");
                 String user = scanner.nextLine();
@@ -139,30 +141,20 @@ public class BPMClient {
                     groups.add(st.nextToken());
                 }
 
-                Map<String, List<String>> paramsMap = new HashMap<>();
-                List<String> paramsValue = new ArrayList<> ();
-                paramsValue.add("009");
-                paramsMap.put("agency", paramsValue);
-                List<String> paramsValue2 = new ArrayList<> ();
-                paramsValue2.add("test");
-                paramsMap.put("Description", paramsValue2);
-                List<String> paramsValue2bis = new ArrayList<> ();
-                paramsValue2bis.add("1.Livello");
-                paramsMap.put("level", paramsValue2bis);
-
-                List<String> paramsValue3 = new ArrayList<> ();
-                paramsValue3.add("");
-                paramsMap.put("level-excluded", paramsValue3);
 
                 Map<String, List<String>> variablesMap = new HashMap<>();
                 List<String> variablesValue1 = new ArrayList<>();
                 variablesValue1.add("test");
-                variablesMap.put("company", variablesValue1);
+                List<String> variablesValue2 = new ArrayList<>();
+                variablesValue2.add("dummy2");
 
-                List<Long> tasks = kieService.potOwnedTasksByVariablesAndTaskParamsInAnd(user, groups, paramsMap, variablesMap);
+                variablesMap.put("company", variablesValue1);
+                variablesMap.put("agency", variablesValue2);
+
+                List<TaskDetailWithVariable> tasks = kieService.potOwnedTasksByVariablesWithVariablesAndParamsInAnd(user, groups, variablesMap);
                 LOG.info("Task list: {}", tasks);
             }
-            else if (selection == 7) {
+            else if (selection == 8) {
                 kieService.endConversation();
                 System.exit(1);
             }
