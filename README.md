@@ -2,6 +2,11 @@
 
 Utilities for Red Hat BPM/BRMS products.
 
+Two branches are available:
+ - bpms6.4.x (code for BPM 6.4.x)
+ - bpms7.0.x (code for BPM 7.0.x)<br>
+master branch is aligned to branch bpms6.4.x
+
 Some components available in this project:
  - rest client for BPM APIs
  - jms client for BPM APIs
@@ -10,7 +15,7 @@ Some components available in this project:
  - custom event listeners
  - custom task event listeners
  - eap log handler for bpm events
- - bpm extensions to the REST APIs
+ - bpm extensions to the REST APIs (only for BPM 6.4.x)
  - bpm kjar inclusion
  - bpm and rules
  
@@ -29,6 +34,11 @@ mvn clean compile
 ```
 
 Create artifacts and execute tests (target folder):
+```bash
+mvn clean package
+```
+
+Create artifacts, execute tests (target folder) and install them in maven repo:
 ```bash
 mvn clean install
 ```
