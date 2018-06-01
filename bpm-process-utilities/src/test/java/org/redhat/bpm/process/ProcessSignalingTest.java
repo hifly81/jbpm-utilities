@@ -27,7 +27,7 @@ public class ProcessSignalingTest extends JbpmJUnitBaseTestCase {
 
     private final static Logger LOG = LoggerFactory.getLogger(ProcessSignalingTest.class);
 
-    private static final String PROCESS_FOLDER = "org/redhat/bpm/workbeat/process/";
+    private static final String PROCESS_FOLDER = "org/redhat/bpm/process/";
 
     private RuntimeManager runtimeManager;
     private RuntimeEngine runtimeEngine;
@@ -79,8 +79,8 @@ public class ProcessSignalingTest extends JbpmJUnitBaseTestCase {
     public void test_process_single_event() {
         HashMap<String, Object> parameters = new HashMap<>();
 
-        ProcessInstance pi = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.workbeat.process-signaling", getCorrelationKey("key1"), parameters);
-        ProcessInstance pi2 = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.workbeat.process-signaling-bis", getCorrelationKey("key2"), parameters);
+        ProcessInstance pi = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.process-signaling", getCorrelationKey("key1"), parameters);
+        ProcessInstance pi2 = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.process-signaling-bis", getCorrelationKey("key2"), parameters);
 
         assertProcessInstanceActive(pi.getId());
         assertNodeTriggered(pi.getId(), "StartProcess", "Script Task 1");
@@ -106,7 +106,7 @@ public class ProcessSignalingTest extends JbpmJUnitBaseTestCase {
     @Test
     public void test_process_multiple_event() {
         HashMap<String, Object> parameters = new HashMap<>();
-        ProcessInstance pi = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.workbeat.process-signaling-multiple-events", getCorrelationKey("key3"), parameters);
+        ProcessInstance pi = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.process-signaling-multiple-events", getCorrelationKey("key3"), parameters);
 
         assertProcessInstanceActive(pi.getId());
         assertNodeTriggered(pi.getId(), "StartProcess", "Script Task 1");
@@ -135,7 +135,7 @@ public class ProcessSignalingTest extends JbpmJUnitBaseTestCase {
     @Test
     public void test_process_multiple_event_subprocess() {
         HashMap<String, Object> parameters = new HashMap<>();
-        ProcessInstance pi = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.workbeat.process-signaling-multiple-events-sub", getCorrelationKey("key4"), parameters);
+        ProcessInstance pi = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.process-signaling-multiple-events-sub", getCorrelationKey("key4"), parameters);
 
         assertProcessInstanceActive(pi.getId());
         assertNodeTriggered(pi.getId(), "StartProcess", "Script Task 1");
@@ -167,7 +167,7 @@ public class ProcessSignalingTest extends JbpmJUnitBaseTestCase {
         parameters.put("containerId", "org.redhat.bpm:bpm-process-signaling:0.0.1-SNAPSHOT");
         parameters.put("eventPublished", "task1_completed");
         parameters.put("jmsConnection", "remote");
-        ProcessInstance pi = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.workbeat.process-signaling-topic-pub", getCorrelationKey("key5"), parameters);
+        ProcessInstance pi = ((CorrelationAwareProcessRuntime)kieSession).startProcess("org.redhat.bpm.process-signaling-topic-pub", getCorrelationKey("key5"), parameters);
 
         assertProcessInstanceActive(pi.getId());
         assertNodeTriggered(pi.getId(), "StartProcess", "Script Task 1");

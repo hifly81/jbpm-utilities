@@ -11,7 +11,6 @@
 	    <module>bpm-client-utilities</module>
         <module>bpm-process-rule</module>
         <module>bpm-query-filter</module>
-        <module>bpm-extensions</module>
     </modules>
 
     <properties>
@@ -19,9 +18,9 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <!-- BOM version -->
-        <version.org.brms-bpmsuite>6.4.9.GA-redhat-2</version.org.brms-bpmsuite>
+        <version.org.rhpam>7.0.0.GA-redhat-3</version.org.rhpam>
         <!-- KIE && jbpm versions -->
-        <version.org.kie>6.5.0.Final-redhat-21</version.org.kie>
+        <version.org.kie>7.7.0.Final-redhat-7</version.org.kie>
         <version.org.slf4j>1.7.15</version.org.slf4j>
 
     </properties>
@@ -46,11 +45,12 @@
 
     <dependencyManagement>
         <dependencies>
+
             <dependency>
-                <groupId>org.jboss.bom.brms</groupId>
-                <artifactId>jboss-brms-bpmsuite-platform-bom</artifactId>
+                <groupId>org.jboss.bom</groupId>
+                <artifactId>rhpam-platform-bom</artifactId>
                 <type>pom</type>
-                <version>${version.org.brms-bpmsuite}</version>
+                <version>${version.org.rhpam}</version>
                 <scope>import</scope>
             </dependency>
 
@@ -59,7 +59,9 @@
                 <artifactId>slf4j-simple</artifactId>
                 <version>${version.org.slf4j}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
+
 
 </project>

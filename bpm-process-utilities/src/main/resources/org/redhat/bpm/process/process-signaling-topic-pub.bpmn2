@@ -8,7 +8,7 @@
   <bpmn2:itemDefinition id="ItemDefinition_7" isCollection="false" structureRef="Object"/>
   <bpmn2:itemDefinition id="ItemDefinition_163" isCollection="false" structureRef="Object"/>
   <bpmn2:signal id="Signal_4" name="task1_completed"/>
-  <bpmn2:process id="org.redhat.bpm.workbeat.process-signaling-topic-pub" tns:packageName="org.redhat.bpm.workbeat" name="process-signaling-topic-pub" isExecutable="true" processType="Private">
+  <bpmn2:process id="org.redhat.bpm.process-signaling-topic-pub" tns:packageName="org.redhat.bpm" name="process-signaling-topic-pub" isExecutable="true" processType="Private">
     <bpmn2:property id="task1_result" itemSubjectRef="ItemDefinition_1" name="task1_result"/>
     <bpmn2:property id="containerId" itemSubjectRef="ItemDefinition_1" name="containerId"/>
     <bpmn2:property id="destinationName" itemSubjectRef="ItemDefinition_1" name="destinationName"/>
@@ -114,7 +114,7 @@
     <bpmn2:sequenceFlow id="SequenceFlow_7" tns:priority="1" sourceRef="Task_1" targetRef="IntermediateCatchEvent_1"/>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_Process_1" bpmnElement="org.redhat.bpm.workbeat.process-signaling-topic-pub">
+    <bpmndi:BPMNPlane id="BPMNPlane_Process_1" bpmnElement="org.redhat.bpm.process-signaling-topic-pub">
       <bpmndi:BPMNShape id="BPMNShape_StartEvent_1" bpmnElement="StartEvent_1">
         <dc:Bounds height="36.0" width="36.0" x="100.0" y="78.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_1">

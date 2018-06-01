@@ -10,29 +10,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
     <artifactId>bpm-process-rule</artifactId>
-    
-    <properties>
 
-		<!-- JAVA -->
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
-
-		<!-- BPMS 6.4.0 -->
-		<version.org.brms-bpmsuite>6.4.9.GA-redhat-2</version.org.brms-bpmsuite>
-
-	</properties>
-    
-    <dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.jboss.bom.brms</groupId>
-				<artifactId>jboss-brms-bpmsuite-platform-bom</artifactId>
-				<version>${version.org.brms-bpmsuite}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	
 	<dependencies>
 		<dependency>
@@ -58,6 +36,7 @@
 			<artifactId>jbpm-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 </project>
