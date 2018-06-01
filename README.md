@@ -3,9 +3,9 @@
 Utilities for Red Hat BPM/BRMS products.
 
 Two branches are available:
- - bpms6.4.x (code for BPM 6.4.x)
+ - master (code for BPM 6.4.x)
  - bpms7.0.x (code for BPM 7.0.x)<br>
-master branch is aligned to branch bpms6.4.x
+
 
 Some components available in this project:
  - rest client for BPM APIs
