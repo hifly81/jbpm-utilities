@@ -4,7 +4,7 @@ Utilities for Red Hat BPM/BRMS products.
 
 Two branches are available:
  - bpms6.4.x (code for BPM 6.4.x)
- - bpms7.0.x (code for BPM 7.0.x)
+ - bpms7.0.x (code for BPM 7.0.x)<br>
 master branch is aligned to branch bpms6.4.x
 
 Some components available in this project:
@@ -34,6 +34,11 @@ mvn clean compile
 ```
 
 Create artifacts and execute tests (target folder):
+```bash
+mvn clean package
+```
+
+Create artifacts, execute tests (target folder) and install them in maven repo:
 ```bash
 mvn clean install
 ```
