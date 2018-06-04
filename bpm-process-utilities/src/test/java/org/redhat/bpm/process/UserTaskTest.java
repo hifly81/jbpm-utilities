@@ -88,7 +88,7 @@ public class UserTaskTest extends JbpmJUnitBaseTestCase {
 
 	}
 
-	@Test
+	//@Test
 	public void test_nominate_no_group() {
 
 		HashMap<String, Object> params = new HashMap<>();
