@@ -43,7 +43,9 @@ public class BPMClient {
             LOG.info("(5) - query - owned task by process variables and task variables");
             LOG.info("(6) - query - owned task by process variables and task variables - AND clause");
             LOG.info("(7) - query - owned task by process variables - AND clause");
-            LOG.info("(8) - quit");
+            LOG.info("(8) - query - task by process variables and task names - AND clause");
+            LOG.info("(9) - query - task by process variables and task names");
+            LOG.info("(10) - quit");
 
             LOG.info("Please enter your selection:\t");
             int selection = scanner.nextInt();
@@ -155,6 +157,48 @@ public class BPMClient {
                 LOG.info("Task list: {}", tasks);
             }
             else if (selection == 8) {
+
+                LOG.info("Enter a list of taskNames, separated with a comma:");
+                String taskNamesList = scanner.nextLine();
+                StringTokenizer st = new StringTokenizer(taskNamesList, ",");
+                List<String> taskNames = new ArrayList<>();
+                while (st.hasMoreElements()) {
+                    taskNames.add(st.nextToken());
+                }
+
+                Map<String, List<String>> variablesMap = new HashMap<>();
+                List<String> variablesValue1 = new ArrayList<>();
+                variablesValue1.add("test");
+                List<String> variablesValue2 = new ArrayList<>();
+                variablesValue2.add("dummy");
+
+                variablesMap.put("company", variablesValue1);
+                variablesMap.put("agency", variablesValue2);
+
+                List<TaskDetailWithVariable> tasks = kieService.tasksByVariablesAndNamesWithVariablesAndParamsInAnd(taskNames, variablesMap);
+                LOG.info("Task list: {}", tasks);
+            }
+            else if (selection == 9) {
+
+                LOG.info("Enter a list of taskNames, separated with a comma:");
+                String taskNamesList = scanner.nextLine();
+                StringTokenizer st = new StringTokenizer(taskNamesList, ",");
+                List<String> taskNames = new ArrayList<>();
+                while (st.hasMoreElements()) {
+                    taskNames.add(st.nextToken());
+                }
+
+                Map<String, List<String>> variablesMap = new HashMap<>();
+                List<String> variablesValue1 = new ArrayList<>();
+                variablesValue1.add("test");
+
+                variablesMap.put("company", variablesValue1);
+
+
+                List<Long> tasks = kieService.tasksByNamesAndVariables(taskNames, variablesMap);
+                LOG.info("Task list: {}", tasks);
+            }
+            else if (selection == 10) {
                 kieService.endConversation();
                 System.exit(1);
             }

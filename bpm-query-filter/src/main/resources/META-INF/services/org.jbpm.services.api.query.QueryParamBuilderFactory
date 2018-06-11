@@ -1,2 +1,3 @@
 org.redhat.bpm.query.queryparam.PotOwnedTasksByVariablesAndParamsFilterFactory
 org.redhat.bpm.query.queryparam.PotOwnedTasksByVariablesAndParamsFilterAndClauseFactory
+org.redhat.bpm.query.queryparam.TasksByNamesAndVariablesFilterFactory

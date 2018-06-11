@@ -12,6 +12,8 @@ public class AdvancedQueryFactory {
     public static final String FIND_PROCESS_INSTANCES_WITH_VARIABLES = "findProcessInstancesWithVariables";
     public static final String POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS = "potOwnedTasksByVariablesAndTaskParamsInOr";
     public static final String FIND_TASKS_WITH_PARAMETERS = "findTasksWithParameters";
+    public static final String TASKS_BY_VARIABLES_AND_PARAMS = "tasksByVariablesAndParams";
+    public static final String TASKS_BY_NAMES_VARIABLES_AND_PARAMS = "tasksByNamesAndVariablesAndParams";
     public static final String PROCESS = "PROCESS";
     public static final String CUSTOM = "CUSTOM";
     public static final String TASK = "TASK";
@@ -23,6 +25,8 @@ public class AdvancedQueryFactory {
         definitions.add(findProcessInstancesWithVariables());
         definitions.add(potOwnedTasksByVariablesAndParams());
         definitions.add(findTasksWithParameters());
+        definitions.add(tasksByVariablesAndParams());
+        definitions.add(tasksByNamesAndVariablesAndParams());
 
         return definitions;
 
@@ -94,6 +98,66 @@ public class AdvancedQueryFactory {
                 "inner join (select tv.taskId, tv.name, tv.value from TaskVariableImpl tv where tv.type = 0) tv "+
                 "on (tv.taskId = ti.taskId)");
         query.setTarget(TASK);
+
+        return query;
+
+    }
+
+    public QueryDefinition tasksByVariablesAndParams() {
+
+        QueryDefinition query = new QueryDefinition();
+        query.setName(TASKS_BY_VARIABLES_AND_PARAMS);
+        query.setSource(SOURCE);
+        query.setExpression(" select task.taskid, task.actualowner, task.status, " +
+                " param.name paramname, param.value paramvalue, " +
+                " variable.variableid variablename, variable.value variablevalue " +
+                " from audittaskimpl task " +
+                " inner join ( " +
+                "       select param.taskid, param.name, param.value  " +
+                "       from taskvariableimpl param  " +
+                "       where param.type = 0  " +
+                " ) param " +
+                " on (param.taskid = task.taskid) " +
+                " inner join variableinstancelog variable " +
+                " on (variable.processinstanceid = task.processinstanceid) " +
+                " inner join ( " +
+                "       select vil.processinstanceid ,vil.variableid, max(vil.id) maxvilid " +
+                "       from variableinstancelog vil " +
+                "       group by vil.processinstanceid, vil.variableid " +
+                "       order by vil.processinstanceid " +
+                " ) x " +
+                " on (variable.variableid = x.variableid and variable.id = x.maxvilid) ");
+        query.setTarget(CUSTOM);
+
+        return query;
+
+    }
+
+    public QueryDefinition tasksByNamesAndVariablesAndParams() {
+
+        QueryDefinition query = new QueryDefinition();
+        query.setName(TASKS_BY_NAMES_VARIABLES_AND_PARAMS);
+        query.setSource(SOURCE);
+        query.setExpression(" select task.taskid, task.actualowner, task.name tvname, task.status, " +
+                " param.name paramname, param.value paramvalue, " +
+                " variable.variableid variablename, variable.value variablevalue " +
+                " from audittaskimpl task " +
+                " inner join ( " +
+                "       select param.taskid, param.name, param.value  " +
+                "       from taskvariableimpl param  " +
+                "       where param.type = 0  " +
+                " ) param " +
+                " on (param.taskid = task.taskid) " +
+                " inner join variableinstancelog variable " +
+                " on (variable.processinstanceid = task.processinstanceid) " +
+                " inner join ( " +
+                "       select vil.processinstanceid ,vil.variableid, max(vil.id) maxvilid " +
+                "       from variableinstancelog vil " +
+                "       group by vil.processinstanceid, vil.variableid " +
+                "       order by vil.processinstanceid " +
+                " ) x " +
+                " on (variable.variableid = x.variableid and variable.id = x.maxvilid) ");
+        query.setTarget(CUSTOM);
 
         return query;
 
