@@ -8,9 +8,9 @@ public class Constants {
     public static final int KIESERVER_PORT = 8080;
     public static final int KIESERVER_TIMEOUT = 30000;
     //FIXME define username
-    public static final String KIESERVER_USERNAME = "";
+    public static final String KIESERVER_USERNAME = "bpmsAdmin";
     //FIXME define password
-    public static final String KIESERVER_PASSWORD = "";
+    public static final String KIESERVER_PASSWORD = "password@1";
     public static final String CONTAINER_ID = "com.redhat.bpm:test-task:1.0";
     public static final String REMOTING_URL = "remote://localhost:4447";
     public static final String INITIAL_CONTEXT_FACTORY = "org.jboss.naming.remote.client.InitialContextFactory";

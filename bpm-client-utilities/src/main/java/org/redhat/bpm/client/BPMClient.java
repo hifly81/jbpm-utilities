@@ -45,7 +45,8 @@ public class BPMClient {
             LOG.info("(7) - query - owned task by process variables - AND clause");
             LOG.info("(8) - query - task by process variables and task names - AND clause");
             LOG.info("(9) - query - task by process variables and task names");
-            LOG.info("(10) - quit");
+            LOG.info("(10) - query - task by groups,by process variables and task variables - not belonging to user");
+            LOG.info("(11) - quit");
 
             LOG.info("Please enter your selection:\t");
             int selection = scanner.nextInt();
@@ -199,6 +200,32 @@ public class BPMClient {
                 LOG.info("Task list: {}", tasks);
             }
             else if (selection == 10) {
+                LOG.info("Enter a user:");
+                String user = scanner.nextLine();
+                LOG.info("Enter a list of group, separated with a comma:");
+                String groupList = scanner.nextLine();
+                StringTokenizer st = new StringTokenizer(groupList, ",");
+                List<String> groups = new ArrayList<>();
+                while (st.hasMoreElements()) {
+                    groups.add(st.nextToken());
+                }
+
+                Map<String, List<String>> paramsMap = new HashMap<>();
+                List<String> paramsValue = new ArrayList<> ();
+                paramsValue.add("test");
+                paramsMap.put("company", paramsValue);
+                List<String> paramsValue2 = new ArrayList<> ();
+                paramsValue2.add("livello1");
+                paramsMap.put("level", paramsValue2);
+                Map<String, List<String>> variablesMap = new HashMap<>();
+                List<String> variablesValue1 = new ArrayList<String>();
+                variablesValue1.add("test");
+                variablesMap.put("company", variablesValue1);
+
+                List<Long> tasks = kieService.tasksByGroupsAndVariablesAndParamsNotActualOwner(groups, paramsMap, variablesMap, null, user);
+                LOG.info("Task list: {}", tasks);
+            }
+            else if (selection == 11) {
                 kieService.endConversation();
                 System.exit(1);
             }

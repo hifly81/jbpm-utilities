@@ -21,6 +21,7 @@ public abstract class KieService {
     private static final String[] POT_OWNED_STATUS = {"Created", "Ready", "Reserved", "InProgress", "Suspended"};
     public static final String[] OPEN_STATUS = { "Created", "Ready", "Reserved", "InProgress", "Suspended" };
     private static final int ARBITRARY_LONG_VALUE = 10000;
+    private static final List<String> TASK_OPEN_STATUS = Arrays.asList(OPEN_STATUS);
 
     protected KieServicesConfiguration config;
 
@@ -150,6 +151,67 @@ public abstract class KieService {
 
         List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct()
                 .collect(Collectors.toList());
+
+        return ids;
+
+    }
+
+    public List<Long> tasksByGroupsAndVariablesAndParams(
+            List<String> groups,
+            Map<String, List<String>> paramsMap,
+            Map<String, List<String>> variablesMap,
+            List<String> status) {
+
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("groups", groups);
+        parameters.put("status", status == null || status.isEmpty()? TASK_OPEN_STATUS: status);
+
+        if (paramsMap != null)
+            parameters.put("paramsMap", paramsMap);
+
+        if (variablesMap != null)
+            parameters.put("variablesMap", variablesMap);
+
+        QueryServicesClient queryService = client.getServicesClient(QueryServicesClient.class);
+
+        List<TaskInstance> taskWithDuplicates = queryService.query(TASKS_BY_GROUPS_AND_VARIABLES_AND_PARAMS,
+                QUERY_MAP_TASK, TASK_BY_GROUPS_AND_VARIABLES_AND_PARAMS_FILTER, parameters, 0, ARBITRARY_LONG_VALUE,
+                TaskInstance.class);
+
+        List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct()
+                .collect(Collectors.toList());
+
+        return ids;
+
+    }
+
+    public List<Long> tasksByGroupsAndVariablesAndParamsNotActualOwner(
+            List<String> groups,
+            Map<String, List<String>> paramsMap,
+            Map<String, List<String>> variablesMap,
+            List<String> status,
+            String actualOwner) {
+
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("groups", groups);
+        parameters.put("status", status == null || status.isEmpty()? TASK_OPEN_STATUS: status);
+        parameters.put("actualOwner", actualOwner);
+
+        if (paramsMap != null)
+            parameters.put("paramsMap", paramsMap);
+
+        if (variablesMap != null)
+            parameters.put("variablesMap", variablesMap);
+
+        QueryServicesClient queryService = client.getServicesClient(QueryServicesClient.class);
+
+        List<TaskInstance> taskWithDuplicates = queryService.query(TASKS_BY_GROUPS_AND_VARIABLES_AND_PARAMS,
+                QUERY_MAP_TASK, TASK_BY_GROUPS_AND_VARIABLES_AND_PARAMS_NOT_ACTUALOWNER_FILTER, parameters, 0, ARBITRARY_LONG_VALUE,
+                TaskInstance.class);
+
+        List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct()
+                .collect(Collectors.toList());
+
 
         return ids;
 
