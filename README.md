@@ -14,6 +14,7 @@ Some components available in this project:
  - custom work item handlers
  - custom event listeners
  - custom task event listeners
+ - sample BPMN processes with: escalation, service task handler, work item handlers
  - eap log handler for bpm events
  - bpm extensions to the REST APIs (only for BPM 6.4.x)
  - bpm kjar inclusion
