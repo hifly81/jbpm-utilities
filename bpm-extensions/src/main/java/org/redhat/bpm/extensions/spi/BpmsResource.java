@@ -79,4 +79,32 @@ public class BpmsResource {
         }
     }
 
+    @POST
+    @Path("instances/{pInstanceId}/node/{nodeName}/{nodeNameToCancel}/trigger")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response triggerNode(@javax.ws.rs.core.Context HttpHeaders headers,
+                                @PathParam("id") String containerId,
+                                @PathParam("pInstanceId") Long processInstanceId,
+                                @PathParam("nodeName") String nodeName,
+                                @PathParam("nodeNameToCancel") String nodeNameToCancel) {
+
+        Variant v = getVariant(headers);
+        Header conversationIdHeader = buildConversationIdHeader(containerId, context, headers);
+        try {
+
+            bpmsService.triggerNode(containerId, processInstanceId, nodeName, nodeNameToCancel);
+
+            return createResponse(null, v, Response.Status.OK, conversationIdHeader);
+
+        } catch (ProcessInstanceNotFoundException e) {
+            return notFound(MessageFormat.format("Could not find process instance with id \"{0}\"", processInstanceId), v, conversationIdHeader);
+        } catch (DeploymentNotFoundException e) {
+            return notFound(MessageFormat.format("Could not find container \"{0}\"", containerId), v, conversationIdHeader);
+        } catch (Exception e) {
+            logger.error("Unexpected error during processing {}", e.getMessage(), e);
+            return internalServerError(MessageFormat.format("Unexpected error during processing: {0}", e.getMessage()), v, conversationIdHeader);
+        }
+    }
+
 }

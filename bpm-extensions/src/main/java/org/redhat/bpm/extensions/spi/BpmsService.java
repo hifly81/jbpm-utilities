@@ -6,6 +6,7 @@ import org.jbpm.services.api.ProcessService;
 import org.kie.api.executor.ExecutionResults;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.kie.server.services.api.KieServerRegistry;
+import org.redhat.bpm.extensions.command.TriggerNodeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,16 @@ public class BpmsService {
                 );
 
         LOG.info("Verify triggerTimer Output: '{}'", execute);
+    }
+
+    public void triggerNode(String containerId, Number processInstanceId, String nodeName, String nodeNameToCancel) {
+        ExecutionResults execute = processService
+                .execute(containerId, ProcessInstanceIdContext.get(processInstanceId.longValue()),
+                        new TriggerNodeCommand(containerId, processInstanceId.longValue(), nodeName, nodeNameToCancel
+                ));
+
+        LOG.info("Verify triggerNode Output: '{}'", execute);
+
     }
 
 
