@@ -10,7 +10,7 @@ public class AdvancedQueryFactory {
     private static final String SOURCE = "java:jboss/datasources/PostgresqlDS";
 
     public static final String FIND_PROCESS_INSTANCES_WITH_VARIABLES = "findProcessInstancesWithVariables";
-    public static final String POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS = "potOwnedTasksByVariablesAndTaskParamsInOr";
+    public static final String POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS = "potOwnedTasksByVariablesAndTaskParams";
     public static final String FIND_TASKS_WITH_PARAMETERS = "findTasksWithParameters";
     public static final String TASKS_BY_VARIABLES_AND_PARAMS = "tasksByVariablesAndParams";
     public static final String TASKS_BY_NAMES_VARIABLES_AND_PARAMS = "tasksByNamesAndVariablesAndParams";

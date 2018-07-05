@@ -328,10 +328,12 @@ public abstract class KieService {
 
             //there is no key to exclude
             if(keyToExclude == null) {
-                keyToQuery = keys.get(0);
+                //keyToQuery = keys.get(0);
+                keyToQuery = "inParam2";
 
                 if(keys.size() == 2)
-                    keyToCheck = keys.get(1);
+                    //keyToCheck = keys.get(1);
+                    keyToCheck = "inParam1";
             }
             else {
 	            /*
@@ -405,6 +407,7 @@ public abstract class KieService {
             if (variablesMap != null)
                 parameters.put("variablesMap", variablesMap);
 
+
             QueryServicesClient queryServices = client.getServicesClient(QueryServicesClient.class);
             List<TaskInstance> taskWithDuplicates = queryServices.query(POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK, "potOwnedTasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
             List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct().collect(Collectors.toList());
@@ -423,7 +426,7 @@ public abstract class KieService {
                                     if (paramsMap.get(keyToCheck).contains(o1))
                                         idsToReturn.add(id);
                                 }
-                                if (!t1.getInputData().containsKey(keyToCheck))
+                                if (!t1.getInputData().containsKey(keyToCheck) && keyToExclude!= null)
                                     idsToReturn.add(id);
                             } else {
                                 if (keyToExcludeWithoutCheck != null) {
@@ -446,13 +449,18 @@ public abstract class KieService {
                                     if (paramsMap.get(incKey).contains(o1))
                                         idsToReturn.add(id);
                                 }
-                                if (!t1.getInputData().containsKey(incKey))
+                                if (!t1.getInputData().containsKey(incKey) && keyToExclude!= null)
                                     idsToReturn.add(id);
                             }
                         }
                     }
                 }
             }
+
+
+            System.out.println("\n\n\n\n\nIDS LIST:" + ids.size());
+            System.out.println("\n\n\n\n\nPARAMS MAP:" + parameters.get("paramsMap"));
+            System.out.println("\n\n\n\n\nids to Return:" + idsToReturn.size() + "-" + idsToReturn);
 
             return idsToReturn;
         }

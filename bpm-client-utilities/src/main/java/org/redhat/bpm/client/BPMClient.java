@@ -132,6 +132,33 @@ public class BPMClient {
                 List<Long> tasks = kieService.potOwnedTasksByVariablesAndTaskParamsInOr(user, groups, paramsMap, variablesMap);
                 LOG.info("Task list: {}", tasks);
             }
+            else if (selection == 6) {
+                LOG.info("Enter a user:");
+                String user = scanner.nextLine();
+                LOG.info("Enter a list of group, separated with a comma:");
+                String groupList = scanner.nextLine();
+                StringTokenizer st = new StringTokenizer(groupList, ",");
+                List<String> groups = new ArrayList<>();
+                while (st.hasMoreElements()) {
+                    groups.add(st.nextToken());
+                }
+
+                Map<String, List<String>> paramsMap = new HashMap<>();
+                //paramsMap.put("inParam1", Arrays.asList("Param1Value1"));
+                //paramsMap.put("inParam2", Arrays.asList("Param2Value1"));
+
+
+                paramsMap.put("inParam2", Arrays.asList("Param2Value1"));
+                paramsMap.put("inParam1", Arrays.asList("Param1Value1"));
+
+
+                Map<String, List<String>> variablesMap = new HashMap<>();
+                variablesMap.put("stringProcessVar1", Arrays.asList("Var1ValuePag"));
+                variablesMap.put("stringProcessVar2", Arrays.asList("Var2ValuePag"));
+
+                List<Long> tasks = kieService.potOwnedTasksByVariablesAndTaskParamsInAnd(user, groups, paramsMap, variablesMap);
+                LOG.info("Task list: {}", tasks);
+            }
             else if (selection == 7) {
 
                 LOG.info("Enter a user:");
