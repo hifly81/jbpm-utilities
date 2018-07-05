@@ -63,6 +63,12 @@
         </work-item-handler>
         <work-item-handler>
             <resolver>mvel</resolver>
+            <identifier>new org.redhat.bpm.wid.RESTPooledWorkItemHandler(true, 500, 50)</identifier>
+            <parameters/>
+            <name>RestPooled</name>
+        </work-item-handler>
+        <work-item-handler>
+            <resolver>mvel</resolver>
             <identifier>new org.redhat.bpm.workbeat.wid.JMSTopicPublisher()</identifier>
             <parameters/>
             <name>JMSTopicPublisher</name>

@@ -59,6 +59,23 @@ import org.drools.core.process.core.datatype.impl.type.ObjectDataType;
   ],
 
   [
+      "name" : "RestPool",
+      "parameters" : [
+          "Url" : new StringDataType(),
+          "Method" : new StringDataType(),
+          "ConnectTimeout" : new StringDataType(),
+          "ReadTimeout" : new StringDataType(),
+          "Username" : new StringDataType(),
+          "Password" : new StringDataType()
+      ],
+      "results" : [
+          "Result" : new ObjectDataType(),
+      ],
+      "displayName" : "RESTPOOLED",
+      "icon" : "defaultservicenodeicon.png"
+    ],
+
+  [
       "name" : "JMSTopicPublisher",
       "parameters" : [
           "destinationName" : new StringDataType(),
