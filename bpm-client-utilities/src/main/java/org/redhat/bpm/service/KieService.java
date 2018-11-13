@@ -6,7 +6,9 @@ import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.api.util.QueryFilterSpecBuilder;
 import org.kie.server.client.*;
+import org.redhat.bpm.model.TaskDetail;
 import org.redhat.bpm.model.TaskDetailWithVariable;
+import org.redhat.bpm.model.TaskDetailWithVariableCustom;
 import org.redhat.bpm.query.AdvancedQueryFactory;
 import org.redhat.bpm.util.BPMN;
 
@@ -20,6 +22,8 @@ public abstract class KieService {
 
     private static final String[] POT_OWNED_STATUS = {"Created", "Ready", "Reserved", "InProgress", "Suspended"};
     public static final String[] OPEN_STATUS = { "Created", "Ready", "Reserved", "InProgress", "Suspended" };
+    private static final String TASK_ID = "taskid";
+    private static final String PROCESS_INSTANCE_ID = "processinstanceid";
     private static final int ARBITRARY_LONG_VALUE = 10000;
     private static final List<String> TASK_OPEN_STATUS = Arrays.asList(OPEN_STATUS);
 
@@ -56,6 +60,48 @@ public abstract class KieService {
 
         return query;
     }
+
+
+    public List<TaskDetailWithVariableCustom>tasksByVariablesAndParamsWithVariablesAndParams(
+            Map<String, List<String>> paramsMap, Map<String, List<String>> variablesMap,
+            boolean asc) {
+
+        HashMap<String, Object> parameters = new HashMap<>();
+
+        parameters.put("status", Arrays.asList(OPEN_STATUS));
+
+        if (paramsMap != null)
+            parameters.put("paramsMap", paramsMap);
+
+        if (variablesMap != null)
+            parameters.put("variablesMap", variablesMap);
+
+        QueryServicesClient queryService = client.getServicesClient(QueryServicesClient.class);
+
+        List<TaskInstance> taskWithDuplicates = queryService.query(TASKS_BY_VARIABLES_AND_PARAMS, QUERY_MAP_TASK,
+                "tasksByVariablesAndParamsFilter", parameters, 0, ARBITRARY_LONG_VALUE, TaskInstance.class);
+        List<Long> ids = taskWithDuplicates.stream().map(taskInstance -> taskInstance.getId()).distinct()
+                .collect(Collectors.toList());
+
+        List<TaskInstance> tasksWithParams = findTasksWithParameters(queryService, ids, asc);
+        List<TaskDetail> taskDetails = kieTaskDetailsToCommon(tasksWithParams);
+
+        List<Long> processIds = tasksWithParams.stream().map(taskInstance -> taskInstance.getProcessInstanceId())
+                .distinct().collect(Collectors.toList());
+        List<ProcessInstance> processInstances = findProcessInstancesWithVariables(queryService, processIds);
+        Map<Long, Map<String, Object>> processInstanceVariables = processInstances.stream()
+                .collect(Collectors.toMap(ProcessInstance::getId, ProcessInstance::getVariables));
+
+        List<TaskDetailWithVariableCustom> taskDetailWithVariableCustoms = taskDetails.stream()
+                .map(taskInstance -> new TaskDetailWithVariableCustom(taskInstance,
+                        processInstanceVariables.get(taskInstance.getProcessInstanceId())))
+                .collect(Collectors.toList());
+
+       return taskDetailWithVariableCustoms;
+
+
+    }
+
 
     public List<Long> potOwnedTasksByVariablesAndTaskParamsInOr(String user, List<String> groups, Map<String, List<String>> paramsMap, Map<String, List<String>> variablesMap) {
 
@@ -603,4 +649,161 @@ public abstract class KieService {
 
         return map;
     }
+
+    public List<TaskInstance> findTasksWithParameters(QueryServicesClient queryService, List<Long> taskIds, boolean asc) {
+
+        List<TaskInstance> taskInstances = null;
+        QueryFilterSpec queryFilterSpec = null;
+
+        if (taskIds.size() > 1000) {
+
+            taskInstances = new ArrayList<>();
+            int maxIndex = taskIds.size();
+            int iMax = maxIndex / 1000;
+            for (int i = 0; i < iMax; i++) {
+                queryFilterSpec = new QueryFilterSpecBuilder().in(TASK_ID, taskIds.subList(1000 * i, 1000 * (i + 1)))
+                        .oderBy(TASK_ID, asc).get();
+                addTaskInstanceList(queryService.query(FIND_TASKS_WITH_PARAMETERS, QUERY_MAP_TASK_WITH_VARS,
+                        queryFilterSpec, 0, ARBITRARY_LONG_VALUE, TaskInstance.class), taskInstances);
+            }
+            queryFilterSpec = new QueryFilterSpecBuilder().in(TASK_ID, taskIds.subList(1000 * iMax, maxIndex))
+                    .oderBy(TASK_ID, asc).get();
+            addTaskInstanceList(queryService.query(FIND_TASKS_WITH_PARAMETERS, QUERY_MAP_TASK_WITH_VARS,
+                    queryFilterSpec, 0, ARBITRARY_LONG_VALUE, TaskInstance.class), taskInstances);
+
+        } else {
+
+            queryFilterSpec = new QueryFilterSpecBuilder().in(TASK_ID, taskIds).oderBy(TASK_ID, asc).get();
+            taskInstances = queryService.query(FIND_TASKS_WITH_PARAMETERS, QUERY_MAP_TASK_WITH_VARS, queryFilterSpec,
+                    0, ARBITRARY_LONG_VALUE, TaskInstance.class);
+
+        }
+
+        return taskInstances;
+    }
+
+    private void addTaskInstanceList(List<TaskInstance> fromList, List<TaskInstance> toList) {
+        for (TaskInstance elem : fromList) {
+            toList.add(elem);
+        }
+    }
+
+    public List<ProcessInstance> findProcessInstancesWithVariables(QueryServicesClient queryService, List<Long> processIds) {
+
+        List<ProcessInstance> processInstances = null;
+        QueryFilterSpec queryFilterSpec = null;
+
+        if (processIds.size() > 1000) {
+
+            processInstances = new ArrayList<>();
+            int maxIndex = processIds.size();
+            int iMax = maxIndex / 1000;
+            for (int i = 0; i < iMax; i++) {
+                queryFilterSpec = new QueryFilterSpecBuilder()
+                        .in(PROCESS_INSTANCE_ID, processIds.subList(1000 * i, 1000 * (i + 1))).get();
+                addProcessInstanceList(queryService.query(FIND_PROCESS_INSTANCES_WITH_VARIABLES,
+                        QUERY_MAP_PI_WITH_VARS, queryFilterSpec, 0, ARBITRARY_LONG_VALUE, ProcessInstance.class),
+                        processInstances);
+            }
+            queryFilterSpec = new QueryFilterSpecBuilder()
+                    .in(PROCESS_INSTANCE_ID, processIds.subList(1000 * iMax, maxIndex)).get();
+            addProcessInstanceList(queryService.query(FIND_PROCESS_INSTANCES_WITH_VARIABLES, QUERY_MAP_PI_WITH_VARS,
+                    queryFilterSpec, 0, ARBITRARY_LONG_VALUE, ProcessInstance.class), processInstances);
+
+        } else {
+
+            queryFilterSpec = new QueryFilterSpecBuilder().in(PROCESS_INSTANCE_ID, processIds).get();
+            processInstances = queryService.query(FIND_PROCESS_INSTANCES_WITH_VARIABLES, QUERY_MAP_PI_WITH_VARS,
+                    queryFilterSpec, 0, ARBITRARY_LONG_VALUE, ProcessInstance.class);
+
+        }
+
+        return processInstances;
+
+    }
+
+    private void addProcessInstanceList(List<ProcessInstance> fromList, List<ProcessInstance> toList) {
+        for (ProcessInstance elem : fromList) {
+            toList.add(elem);
+        }
+    }
+
+    private List<TaskDetail> kieTaskDetailsToCommon(List<TaskInstance> taskInstances) {
+        if ( taskInstances == null ) {
+            return null;
+        }
+
+        List<TaskDetail> list = new ArrayList<TaskDetail>( taskInstances.size() );
+        for ( TaskInstance taskInstance : taskInstances ) {
+            list.add( kieToCommon( taskInstance ) );
+        }
+
+        return list;
+    }
+
+    private TaskDetail kieToCommon(TaskInstance kieTaskInstance) {
+        if ( kieTaskInstance == null ) {
+            return null;
+        }
+
+        TaskDetail taskDetail = new TaskDetail();
+
+        taskDetail.setId( kieTaskInstance.getId() );
+        taskDetail.setPriority( kieTaskInstance.getPriority() );
+        taskDetail.setName( kieTaskInstance.getName() );
+        taskDetail.setSubject( kieTaskInstance.getSubject() );
+        taskDetail.setDescription( kieTaskInstance.getDescription() );
+        taskDetail.setTaskType( kieTaskInstance.getTaskType() );
+        taskDetail.setFormName( kieTaskInstance.getFormName() );
+        taskDetail.setStatus( kieTaskInstance.getStatus() );
+        taskDetail.setActualOwner( kieTaskInstance.getActualOwner() );
+        taskDetail.setCreatedBy( kieTaskInstance.getCreatedBy() );
+        taskDetail.setCreatedOn( kieTaskInstance.getCreatedOn() );
+        taskDetail.setActivationTime( kieTaskInstance.getActivationTime() );
+        taskDetail.setExpirationDate( kieTaskInstance.getExpirationDate() );
+        taskDetail.setSkipable( kieTaskInstance.getSkipable() );
+        taskDetail.setWorkItemId( kieTaskInstance.getWorkItemId() );
+        taskDetail.setProcessInstanceId( kieTaskInstance.getProcessInstanceId() );
+        taskDetail.setParentId( kieTaskInstance.getParentId() );
+        taskDetail.setProcessId( kieTaskInstance.getProcessId() );
+        taskDetail.setContainerId( kieTaskInstance.getContainerId() );
+        List<String> list = kieTaskInstance.getPotentialOwners();
+        if ( list != null ) {
+            taskDetail.setPotentialOwners( new ArrayList<String>( list ) );
+        }
+        else {
+            taskDetail.setPotentialOwners( null );
+        }
+        List<String> list1 = kieTaskInstance.getExcludedOwners();
+        if ( list1 != null ) {
+            taskDetail.setExcludedOwners( new ArrayList<String>( list1 ) );
+        }
+        else {
+            taskDetail.setExcludedOwners( null );
+        }
+        List<String> list2 = kieTaskInstance.getBusinessAdmins();
+        if ( list2 != null ) {
+            taskDetail.setBusinessAdmins( new ArrayList<String>( list2 ) );
+        }
+        else {
+            taskDetail.setBusinessAdmins( null );
+        }
+        Map<String, Object> map = kieTaskInstance.getInputData();
+        if ( map != null ) {
+            taskDetail.setInputData( new HashMap<String, Object>( map ) );
+        }
+        else {
+            taskDetail.setInputData( null );
+        }
+        Map<String, Object> map1 = kieTaskInstance.getOutputData();
+        if ( map1 != null ) {
+            taskDetail.setOutputData( new HashMap<String, Object>( map1 ) );
+        }
+        else {
+            taskDetail.setOutputData( null );
+        }
+
+        return taskDetail;
+    }
+
 }

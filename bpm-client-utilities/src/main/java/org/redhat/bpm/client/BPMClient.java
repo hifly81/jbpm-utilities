@@ -3,6 +3,7 @@ package org.redhat.bpm.client;
 import org.kie.server.api.model.instance.ProcessInstance;
 import org.kie.server.api.model.instance.TaskInstance;
 import org.redhat.bpm.model.TaskDetailWithVariable;
+import org.redhat.bpm.model.TaskDetailWithVariableCustom;
 import org.redhat.bpm.service.GatewaySettings;
 import org.redhat.bpm.service.KieService;
 import org.redhat.bpm.service.KieServiceFactory;
@@ -46,7 +47,8 @@ public class BPMClient {
             LOG.info("(8) - query - task by process variables and task names - AND clause");
             LOG.info("(9) - query - task by process variables and task names");
             LOG.info("(10) - query - task by groups,by process variables and task variables - not belonging to user");
-            LOG.info("(11) - quit");
+            LOG.info("(11) - query - task by variables, params with variables and params");
+            LOG.info("(12) - quit");
 
             LOG.info("Please enter your selection:\t");
             int selection = scanner.nextInt();
@@ -253,6 +255,19 @@ public class BPMClient {
                 LOG.info("Task list: {}", tasks);
             }
             else if (selection == 11) {
+                Map<String, List<String>> paramsMap = new HashMap<>();
+                List<String> paramsValue = new ArrayList<> ();
+                paramsValue.add("true");
+                paramsMap.put("Skippable", paramsValue);
+                Map<String, List<String>> variablesMap = new HashMap<>();
+                List<String> variablesValue1 = new ArrayList<String>();
+                variablesValue1.add("bpmsAdmin");
+                variablesMap.put("initiator", variablesValue1);
+
+                List<TaskDetailWithVariableCustom> tasks = kieService.tasksByVariablesAndParamsWithVariablesAndParams(paramsMap, variablesMap, true);
+                LOG.info("Task list: {}", tasks);
+            }
+            else if (selection == 12) {
                 kieService.endConversation();
                 System.exit(1);
             }
