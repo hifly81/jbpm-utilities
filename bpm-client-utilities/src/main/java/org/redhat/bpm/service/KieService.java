@@ -6,18 +6,13 @@ import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.api.util.QueryFilterSpecBuilder;
 import org.kie.server.client.*;
-import org.redhat.bpm.model.Page;
 import org.redhat.bpm.model.TaskDetailWithVariable;
 import org.redhat.bpm.query.AdvancedQueryFactory;
 import org.redhat.bpm.util.BPMN;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparingInt;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
 import static org.kie.server.client.QueryServicesClient.*;
 import static org.redhat.bpm.query.AdvancedQueryFactory.FIND_PROCESS_INSTANCES_WITH_VARIABLES;
 import static org.redhat.bpm.query.AdvancedQueryFactory.POT_OWNED_TASKS_BY_VARIABLES_AND_PARAMS;
