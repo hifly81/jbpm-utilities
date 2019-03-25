@@ -16,9 +16,6 @@ import org.kie.api.task.model.TaskSummary;
 import org.kie.internal.task.api.TaskModelProvider;
 import org.kie.internal.task.api.model.InternalOrganizationalEntity;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +85,7 @@ public class UserTaskTest extends JbpmJUnitBaseTestCase {
 
 	}
 
-	//@Test
+	@Test
 	public void test_nominate_no_group() {
 
 		HashMap<String, Object> params = new HashMap<>();
