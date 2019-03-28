@@ -1,5 +1,6 @@
 package org.redhat.bpm.process;
 
+import org.jbpm.services.api.UserTaskService;
 import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -10,10 +11,7 @@ import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.manager.audit.AuditService;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.task.TaskService;
-import org.kie.api.task.model.Group;
-import org.kie.api.task.model.OrganizationalEntity;
-import org.kie.api.task.model.Status;
-import org.kie.api.task.model.TaskSummary;
+import org.kie.api.task.model.*;
 import org.kie.internal.task.api.TaskModelProvider;
 import org.kie.internal.task.api.model.InternalOrganizationalEntity;
 
@@ -28,6 +26,7 @@ public class BusinessAdminTaskTest extends JbpmJUnitBaseTestCase {
     private KieSession kieSession;
     private TaskService taskService;
     private AuditService auditService;
+    private UserTaskService userTaskService;
 
     private static final String USER_ADMINISTRATOR = "Administrator";
 
@@ -85,6 +84,7 @@ public class BusinessAdminTaskTest extends JbpmJUnitBaseTestCase {
 
         tasks = taskService.getTasksAssignedAsBusinessAdministrator(USER_ADMINISTRATOR, "");
         assertEquals(1, tasks.size());
+        assertEquals(Status.Ready, task.getStatus());
 
 
     }

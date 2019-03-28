@@ -122,5 +122,30 @@ import org.drools.core.process.core.datatype.impl.type.ObjectDataType;
                "delayAttempts" : new StringDataType()
             ],
           "displayName" : "IncreaseAttempts"
-        ]
+        ],
+
+
+            [
+               "name" : "AddOwnershipTask",
+               "parameters" : [
+                   "taskId" : new LongDataType(),
+                   "potOwners": new StringDataType()
+               ],
+               "results" : [],
+               "displayName" : "AddOwnershipTask",
+               "icon" : "defaultservicenodeicon.png"
+             ],
+
+           [
+               "name" : "LoadTasks",
+             	"parameters" : [
+             	 "kieDeployment" : new StringDataType(),
+                  "processDefinition" : new StringDataType(),
+                  "taskCreationDate" : new StringDataType(),
+               ],
+             	"results" : [
+                  "taskInstanceIds" : new ObjectDataType()
+                ],
+               "displayName" : "LoadTasks"
+             ]
 ]

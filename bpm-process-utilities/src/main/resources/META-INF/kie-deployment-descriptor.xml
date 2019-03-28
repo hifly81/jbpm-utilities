@@ -85,6 +85,18 @@
             <parameters/>
             <name>IncreaseAttempts</name>
         </work-item-handler>
+        <work-item-handler>
+            <resolver>mvel</resolver>
+            <identifier>new it.redhat.demo.bpm.process.wid.AddOwnershipTask(runtimeManager)</identifier>
+            <parameters/>
+            <name>AddOwnershipTask</name>
+        </work-item-handler>
+        <work-item-handler>
+            <resolver>mvel</resolver>
+            <identifier>new it.redhat.demo.bpm.process.wid.LoadTasks(runtimeManager)</identifier>
+            <parameters/>
+            <name>LoadTasks</name>
+        </work-item-handler>
     </work-item-handlers>
     <environment-entries/>
     <configurations/>
