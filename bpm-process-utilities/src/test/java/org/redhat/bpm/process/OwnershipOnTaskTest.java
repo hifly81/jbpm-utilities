@@ -42,7 +42,7 @@ public class OwnershipOnTaskTest extends JbpmJUnitBaseTestCase {
     @Before
     public void before() {
 
-        runtimeManager = createRuntimeManager(PROCESS_FOLDER + "task-sample.bpmn2", PROCESS_FOLDER + "ownership-on-tasks.bpmn2");
+        runtimeManager = createRuntimeManager(PROCESS_FOLDER + "task-sample.bpmn2", PROCESS_FOLDER + "technical-process.bpmn2");
         runtimeEngine = getRuntimeEngine();
         
         kieSession = runtimeEngine.getKieSession();
@@ -95,7 +95,8 @@ public class OwnershipOnTaskTest extends JbpmJUnitBaseTestCase {
         parameters2.put("processDefinition", "it.redhat.demo.bpm.process.task-sample");
         parameters2.put("potOwners", "kie-server,backoffice");
         parameters2.put("taskCreationDate", "1900-10-10");
-        ProcessInstance pi3 = kieSession.startProcess("it.redhat.demo.bpm.process.ownership-on-tasks", parameters2);
+        parameters2.put("technicalOperation", "TASKOWNERSHIP");
+        ProcessInstance pi3 = kieSession.startProcess("it.redhat.demo.bpm.process.technical-process", parameters2);
 
         assertProcessInstanceCompleted(pi3.getId());
         //###### Start it.redhat.demo.bpm.process.ownership-on-tasks process, it will add new potential owners to previous processes

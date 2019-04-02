@@ -87,15 +87,33 @@
         </work-item-handler>
         <work-item-handler>
             <resolver>mvel</resolver>
-            <identifier>new it.redhat.demo.bpm.process.wid.AddOwnershipTask(runtimeManager)</identifier>
+            <identifier>new org.redhat.bpm.wid.AddOwnershipTask(runtimeManager)</identifier>
             <parameters/>
             <name>AddOwnershipTask</name>
         </work-item-handler>
         <work-item-handler>
             <resolver>mvel</resolver>
-            <identifier>new it.redhat.demo.bpm.process.wid.LoadTasks(runtimeManager)</identifier>
+            <identifier>new org.redhat.bpm.wid.LoadTasks(runtimeManager)</identifier>
             <parameters/>
             <name>LoadTasks</name>
+        </work-item-handler>
+        <work-item-handler>
+            <resolver>mvel</resolver>
+            <identifier>new org.redhat.bpm.wid.AbortProcessTask(runtimeManager)</identifier>
+            <parameters/>
+            <name>AbortProcessTask</name>
+        </work-item-handler>
+        <work-item-handler>
+            <resolver>mvel</resolver>
+            <identifier>new org.redhat.bpm.wid.LoadProcesses(runtimeManager)</identifier>
+            <parameters/>
+            <name>LoadProcesses</name>
+        </work-item-handler>
+        <work-item-handler>
+            <resolver>mvel</resolver>
+            <identifier>new org.redhat.bpm.wid.LoadCSV(runtimeManager)</identifier>
+            <parameters/>
+            <name>LoadCSV</name>
         </work-item-handler>
     </work-item-handlers>
     <environment-entries/>

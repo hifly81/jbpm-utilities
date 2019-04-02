@@ -147,5 +147,41 @@ import org.drools.core.process.core.datatype.impl.type.ObjectDataType;
                   "taskInstanceIds" : new ObjectDataType()
                 ],
                "displayName" : "LoadTasks"
+             ],
+                    [
+                       "name" : "AbortProcessTask",
+                       "parameters" : [
+                           "processId" : new LongDataType(),
+                           "kieDeployment" : new StringDataType()
+                       ],
+                       "results" : [],
+                       "displayName" : "AbortProcessTask",
+                       "icon" : "defaultservicenodeicon.png"
+                     ],
+
+                   [
+                       "name" : "LoadProcesses",
+                     	"parameters" : [
+                     	 "kieDeployment" : new StringDataType(),
+                          "processDefinition" : new StringDataType(),
+                          "variables" : new ObjectDataType(),
+                       ],
+                     	"results" : [
+                          "processesIds" : new ObjectDataType()
+                        ],
+                       "displayName" : "LoadProcesses"
+                     ],
+
+                           [
+                               "name" : "LoadCSV",
+                             	"parameters" : [
+                             	 "csvHeaderNumber" : new IntegerDataType(),
+                                  "csvFile" : new StringDataType()
+                               ],
+                             	"results" : [
+                                  "variables" : new ObjectDataType()
+                                ],
+                               "displayName" : "LoadCSV"
+                             ]
+
              ]
-]

@@ -65,11 +65,11 @@ public class LoadTasks implements WorkItemHandler {
 
 		List<Long> processInstanceIds = loadProcessInstances(kieDeployment, processDefinition);
 		
-		LOG.info("Find {} processInstances from container {}. Process definition {}.", processInstanceIds.size(), kieDeployment, processDefinition);
+		LOG.info("Found {} processInstances from container {}. Process definition {}.", processInstanceIds.size(), kieDeployment, processDefinition);
 
 		List<Long> tasks = loadTaskInstances(processInstanceIds, dateSplitted);
 
-		LOG.info("Find {} tasks to handle new ownerships...", processInstanceIds.size());
+		LOG.info("Found {} tasks to handle new ownerships...", tasks == null? 0: tasks.size());
 
 		HashMap<String,Object> results = new HashMap<String, Object>();
 		results.put("taskInstanceIds", tasks);
@@ -98,7 +98,7 @@ public class LoadTasks implements WorkItemHandler {
 		List<Long> tasks = new ArrayList<>();
 		if(processInstanceIds != null && !processInstanceIds.isEmpty()) {
 			for(Long processInstanceId: processInstanceIds) {
-				tasks.addAll(taskService.getTasksByStatusByProcessInstanceId(processInstanceId, Arrays.asList(Status.Ready), "").stream()
+				tasks.addAll(taskService.getTasksByStatusByProcessInstanceId(processInstanceId, Arrays.asList(Status.Ready, Status.InProgress), "").stream()
 						.filter(ti -> ti.getCreatedOn().after(date))
 						.map(ti -> ti.getId())
 						.collect(Collectors.toList()));
