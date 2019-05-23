@@ -30,15 +30,17 @@ public class TriggerNodeCommand implements GenericCommand<ExecutionResults> {
     private long processInstanceId;
     private String nodeName;
     private String nodeNameToCancel;
+    private Boolean nodeNameToCancelRequired;
 
     private RuntimeManager runtimeManager;
 
 
-    public TriggerNodeCommand(String containerId, long processInstanceId, String nodeName, String nodeNameToCancel) {
+    public TriggerNodeCommand(String containerId, long processInstanceId, String nodeName, String nodeNameToCancel, Boolean nodeNameToCancelRequired) {
         this.containerId = containerId;
         this.processInstanceId = processInstanceId;
         this.nodeName = nodeName;
         this.nodeNameToCancel = nodeNameToCancel;
+        this.nodeNameToCancelRequired = nodeNameToCancelRequired;
     }
 
 
@@ -54,12 +56,15 @@ public class TriggerNodeCommand implements GenericCommand<ExecutionResults> {
             throw new ProcessInstanceNotFoundException("Process instance with id " + processInstanceId + " not found");
         }
 
-        NodeInstance nodeInstance = wfp.getNodeInstances(true).stream().filter(ni -> ni.getNodeName().equalsIgnoreCase(nodeNameToCancel)).findFirst().orElse(null);
-        if (nodeInstance == null) {
-            throw new IllegalStateException("Node instance with id " + nodeInstance.getId() + " not found");
+        if(nodeNameToCancelRequired != null && nodeNameToCancelRequired) {
+            //node to cancel if property set
+            NodeInstance nodeInstance = wfp.getNodeInstances(true).stream().filter(ni -> ni.getNodeName().equalsIgnoreCase(nodeNameToCancel)).findFirst().orElse(null);
+            if (nodeInstance == null) {
+                throw new IllegalStateException("Node instance with id " + nodeInstance.getId() + " not found");
+            }
+            logger.info("Found node instance {} to be canceled", nodeInstance);
+            ((NodeInstanceImpl) nodeInstance).cancel();
         }
-        logger.info("Found node instance {} to be canceled", nodeInstance);
-        ((NodeInstanceImpl)nodeInstance).cancel();
 
         Node node = getNodesRecursively((NodeContainer) wfp.getNodeContainer()).stream().filter(ni -> ni.getName().equalsIgnoreCase(nodeName)).findFirst().orElse(null);
 

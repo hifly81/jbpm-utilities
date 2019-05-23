@@ -41,10 +41,10 @@ public class BpmsService {
         LOG.info("Verify triggerTimer Output: '{}'", execute);
     }
 
-    public void triggerNode(String containerId, Number processInstanceId, String nodeName, String nodeNameToCancel) {
+    public void triggerNode(String containerId, Number processInstanceId, String nodeName, String nodeNameToCancel, Boolean nodeNameToCancelRequired) {
         ExecutionResults execute = processService
                 .execute(containerId, ProcessInstanceIdContext.get(processInstanceId.longValue()),
-                        new TriggerNodeCommand(containerId, processInstanceId.longValue(), nodeName, nodeNameToCancel
+                        new TriggerNodeCommand(containerId, processInstanceId.longValue(), nodeName, nodeNameToCancel, nodeNameToCancelRequired
                 ));
 
         LOG.info("Verify triggerNode Output: '{}'", execute);

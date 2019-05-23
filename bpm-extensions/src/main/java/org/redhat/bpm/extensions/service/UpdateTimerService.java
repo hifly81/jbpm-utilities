@@ -11,6 +11,8 @@ public interface UpdateTimerService {
 
 	List<TimerPayload> cancelTimer(String identifier, long piid);
 
+	void cancelTimerAndReload(String identifier, long piid);
+
 	void updateTimerNode(Long piid, String identifier, long delay, long period, int repeatLimit);
 
 	// when using java 8 use interface default methods instead ;)

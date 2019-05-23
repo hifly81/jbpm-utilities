@@ -80,20 +80,21 @@ public class BpmsResource {
     }
 
     @POST
-    @Path("instances/{pInstanceId}/node/{nodeName}/{nodeNameToCancel}/trigger")
+    @Path("instances/{pInstanceId}/node/{nodeName}/{nodeNameToCancel}/{nodeNameToCancelRequired}/trigger")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response triggerNode(@javax.ws.rs.core.Context HttpHeaders headers,
                                 @PathParam("id") String containerId,
                                 @PathParam("pInstanceId") Long processInstanceId,
                                 @PathParam("nodeName") String nodeName,
-                                @PathParam("nodeNameToCancel") String nodeNameToCancel) {
+                                @PathParam("nodeNameToCancel") String nodeNameToCancel,
+                                @PathParam("nodeNameToCancelRequired") Boolean nodeNameToCancelRequired) {
 
         Variant v = getVariant(headers);
         Header conversationIdHeader = buildConversationIdHeader(containerId, context, headers);
         try {
 
-            bpmsService.triggerNode(containerId, processInstanceId, nodeName, nodeNameToCancel);
+            bpmsService.triggerNode(containerId, processInstanceId, nodeName, nodeNameToCancel, nodeNameToCancelRequired);
 
             return createResponse(null, v, Response.Status.OK, conversationIdHeader);
 
