@@ -14,9 +14,10 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 
-		<version.org.brms-bpmsuite>6.5.0.Final-redhat-25</version.org.brms-bpmsuite>
+		<version.org.brms-bpmsuite>6.4.11.GA-redhat-2</version.org.brms-bpmsuite>
 
 		<version.org.slf4j>1.7.15</version.org.slf4j>
+		<kafka.version>2.2.1</kafka.version>
 
 	</properties>
 
@@ -100,6 +101,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.12</artifactId>
+			<version>${kafka.version}</version>
 		</dependency>
 
 

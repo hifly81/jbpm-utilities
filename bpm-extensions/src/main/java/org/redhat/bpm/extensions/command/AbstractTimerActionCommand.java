@@ -49,7 +49,6 @@ public abstract class AbstractTimerActionCommand {
 			action.accept(identifier, piid);
 			ut.commit();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			ut.rollback();
 		}
@@ -76,7 +75,6 @@ public abstract class AbstractTimerActionCommand {
 
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 
 		}

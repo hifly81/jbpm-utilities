@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class AdvancedQueryFactory {
 
-    //FIXME define datsource bpm
+    //FIXME define datasource bpm from external property
     private static final String SOURCE = "java:jboss/datasources/PostgresqlDS";
 
     public static final String FIND_PROCESS_INSTANCES_WITH_VARIABLES = "findProcessInstancesWithVariables";
