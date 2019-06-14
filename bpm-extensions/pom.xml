@@ -14,7 +14,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 
-		<version.org.brms-bpmsuite>6.4.6.GA-redhat-1</version.org.brms-bpmsuite>
+		<version.org.brms-bpmsuite>6.5.0.Final-redhat-25</version.org.brms-bpmsuite>
 
 		<version.org.slf4j>1.7.15</version.org.slf4j>
 
