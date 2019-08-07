@@ -12,6 +12,10 @@
         <module>bpm-process-rule</module>
         <module>bpm-query-filter</module>
         <module>bpm-extensions</module>
+        <module>bpm-signal-scope/scope-default</module>
+        <module>bpm-signal-scope/scope-processinstance</module>
+        <module>bpm-kjar-inclusion/master-proc</module>
+        <module>bpm-kjar-inclusion/sample-proc</module>
     </modules>
 
     <properties>

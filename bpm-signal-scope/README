@@ -1,0 +1,12 @@
+1) Creare 3000 istanze di processo che hanno il signal con scope Process Instance
+./create-scope-process.sh
+
+2) Creare 3000 istanze di processo che hanno il signal con scope Default
+./create-scope-default.sh
+
+3) Una volta conclusa la creazione delle 6000 istanze (3000 + 3000), movimentare (Claim + start + Complete) uno human task per una qualsiasi istanza del container
+com.redhat:testBPM:1.4 (Scope Process instance) - Verificare sul server.log la scritta testHTTTTEXT
+
+4) 3) Una volta conclusa la creazione delle 6000 istanze (3000 + 3000), movimentare (Claim + start + Complete) uno human task per una qualsiasi istanza del container
+com.redhat:testBPM:1.5 (Scope Default) - Verificare sul server.log la scritta testHTTTTEXT - Ci vorranno alcuni secondi per avere la scritta sul log
+
